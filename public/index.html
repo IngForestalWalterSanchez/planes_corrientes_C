@@ -1094,6 +1094,7 @@
                             <option value="conservacion">Plan de Conservación</option>
                             <option value="cambio_uso">Plan de Cambio de Uso de Suelo</option>
                             <option value="control_arbustivas">Control de Arbustivas</option>
+                            <option value="apertura_caminos">Apertura de Caminos - Cortafuegos</option>
                         </select>
                     </div>
                 </fieldset>
@@ -1256,6 +1257,59 @@
                                                 <input type="checkbox" id="kml-parcelas-visible" checked />
                                                 Mostrar capa
                                             </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="map-layer-control">
+                                        <h4>
+                                            <span class="map-color-indicator" style="background-color: #1a1a1a;"></span>
+                                            Apertura de Caminos / Cortafuegos
+                                        </h4>
+                                        <div class="map-file-input-group">
+                                            <label for="kml-caminos-file">Cargar KML:</label>
+                                            <input type="file" id="kml-caminos-file" accept=".kml" />
+                                        </div>
+                                        <div class="map-checkbox-group">
+                                            <label>
+                                                <input type="checkbox" id="kml-caminos-visible" checked />
+                                                Mostrar capa
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- REFERENCIAS DEL MAPA -->
+                                <div id="map-legend-container" style="margin-top:12px; padding:10px 14px; background:#fff; border:1px solid #ddd; border-radius:6px;">
+                                    <div style="font-weight:bold; font-size:0.92em; color:#333; border-bottom:1px solid #ddd; padding-bottom:6px; margin-bottom:8px;">📍 Referencias de Capas Cargadas</div>
+                                    <div id="map-legend-items" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:6px 20px; font-size:0.88em;">
+                                        <div class="legend-item" id="legend-predio" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
+                                            <span style="display:inline-block; width:28px; height:5px; background:#ed07ed; border-radius:3px; flex-shrink:0;"></span>
+                                            <span>Polígono del Predio</span>
+                                            <span id="legend-predio-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
+                                        </div>
+                                        <div class="legend-item" id="legend-plan" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
+                                            <span style="display:inline-block; width:28px; height:5px; background:#06f1f1; border-radius:3px; flex-shrink:0;"></span>
+                                            <span>Área del Plan Técnico</span>
+                                            <span id="legend-plan-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
+                                        </div>
+                                        <div class="legend-item" id="legend-parcelas" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
+                                            <span style="display:inline-block; width:14px; height:14px; background:#ed6e07; border-radius:50%; flex-shrink:0;"></span>
+                                            <span>Parcelas de Muestreo</span>
+                                            <span id="legend-parcelas-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
+                                        </div>
+                                        <div class="legend-item" id="legend-caminos" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
+                                            <span style="display:inline-block; width:28px; height:5px; background:#1a1a1a; border-radius:3px; flex-shrink:0; border-top: 3px dashed #1a1a1a; background:transparent;"></span>
+                                            <span>Caminos / Cortafuegos</span>
+                                            <span id="legend-caminos-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
+                                        </div>
+                                        <div class="legend-item" id="legend-ordenamiento" style="display:flex; align-items:center; gap:8px;">
+                                            <span style="display:inline-flex; gap:3px; flex-shrink:0;">
+                                                <span style="display:inline-block; width:9px; height:14px; background:#dc3545; border-radius:2px;"></span>
+                                                <span style="display:inline-block; width:9px; height:14px; background:#ffc107; border-radius:2px;"></span>
+                                                <span style="display:inline-block; width:9px; height:14px; background:#28a745; border-radius:2px;"></span>
+                                            </span>
+                                            <span>Ordenamiento OTBN</span>
+                                            <span id="legend-ordenamiento-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Cargando…</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1804,12 +1858,13 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             let planGeoJSON = null;
             let ordenamientoGeoJSON = null;
             
-            const mapLayers = { predio: null, plan: null, parcelas: null, ordenamiento: null };
+            const mapLayers = { predio: null, plan: null, parcelas: null, ordenamiento: null, caminos: null };
             
             const mapStyles = {
                 predio: { color: '#ed07ed', weight: 3, opacity: 0.9, fillOpacity: 0.01 },
                 plan: { color: ' #06f1f1', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
                 parcelas: { color: '#ed6e07', weight: 2, opacity: 1, fillOpacity: 0.8, radius: 6 },
+                caminos: { color: '#1a1a1a', weight: 1.5, opacity: 0.95, fillOpacity: 0.15, dashArray: '8, 5' },
                 ordenamiento: (feature) => {
                     const cat = feature.properties.Categoria ? String(feature.properties.Categoria).toUpperCase() : '';
                     let style = { weight: 1.5, opacity: 0.8, fillOpacity: 0.4 };
@@ -1822,7 +1877,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             };
 
             const mapLayerTitles = {
-                predio: 'Polígono del Predio', plan: 'Área del Plan Técnico', parcelas: 'Parcelas de Muestreo'
+                predio: 'Polígono del Predio', plan: 'Área del Plan Técnico', parcelas: 'Parcelas de Muestreo', caminos: 'Apertura de Caminos / Cortafuegos'
             };
             
             const statusEl = document.getElementById('map-status');
@@ -1832,6 +1887,22 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 statusEl.className = 'map-status ' + type;
                 statusEl.style.display = 'block';
                 setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+            }
+
+            // Actualizar leyenda visual
+            function updateLegendItem(key, loaded) {
+                const item = document.getElementById('legend-' + key);
+                const status = document.getElementById('legend-' + key + '-status');
+                if (!item || !status) return;
+                if (loaded) {
+                    item.style.opacity = '1';
+                    status.textContent = '✔ Cargada';
+                    status.style.color = '#1a1a1a';
+                } else {
+                    item.style.opacity = '0.4';
+                    status.textContent = 'Sin cargar';
+                    status.style.color = '#aaa';
+                }
             }
 
             function loadOrdenamientoFromServer() {
@@ -1858,12 +1929,16 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                         updateLayerControl(overlayLayers);
 
                         showMapStatus('Capa de Ordenamiento cargada desde el servidor.', 'success');
+                        const legOrd = document.getElementById('legend-ordenamiento-status');
+                        if (legOrd) { legOrd.textContent = '✔ Cargada'; legOrd.style.color = '#1a1a1a'; }
                         calcularInterseccionesYSuperficies();
                         calculatePlanCategoriesIntersection(); 
                     })
                     .catch(error => {
                         console.error('Error al cargar Ordenamiento.json:', error);
                         showMapStatus('Error al cargar la capa de Ordenamiento desde el servidor.', 'error');
+                        const legOrd = document.getElementById('legend-ordenamiento-status');
+                        if (legOrd) { legOrd.textContent = 'No disponible'; legOrd.style.color = '#dc3545'; }
                     });
             }
             
@@ -1916,6 +1991,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
 
                         updateLayerControl({ ...getVisibleUserLayers(), "Ordenamiento Territorial": mapLayers.ordenamiento });
                         showMapStatus(`Capa "${mapLayerTitles[layerName]}" cargada.`, 'success');
+                        updateLegendItem(layerName, true);
                         
                         if (layerName === 'predio') {
                             const center = mapLayers.predio.getBounds().getCenter();
@@ -1946,7 +2022,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 var hasLayers = false;
                 
                 // Se juntan todas las capas visibles en un solo grupo
-                ['predio', 'plan', 'parcelas'].forEach(key => {
+                ['predio', 'plan', 'parcelas', 'caminos'].forEach(key => {
                     if (mapLayers[key] && map.hasLayer(mapLayers[key])) {
                         group.addLayer(mapLayers[key]);
                         hasLayers = true;
@@ -2102,11 +2178,13 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             document.getElementById('kml-predio-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'predio'));
             document.getElementById('kml-plan-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'plan'));
             document.getElementById('kml-parcelas-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'parcelas'));
+            document.getElementById('kml-caminos-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'caminos'));
             document.getElementById('kml-predio-visible').addEventListener('change', (e) => toggleLayer('predio', e.target.checked));
             document.getElementById('kml-plan-visible').addEventListener('change', (e) => toggleLayer('plan', e.target.checked));
             document.getElementById('kml-parcelas-visible').addEventListener('change', (e) => toggleLayer('parcelas', e.target.checked));
+            document.getElementById('kml-caminos-visible').addEventListener('change', (e) => toggleLayer('caminos', e.target.checked));
             document.getElementById('btn-map-clear').addEventListener('click', () => {
-                ['predio', 'plan', 'parcelas'].forEach(key => {
+                ['predio', 'plan', 'parcelas', 'caminos'].forEach(key => {
                     if (mapLayers[key]) { map.removeLayer(mapLayers[key]); mapLayers[key] = null; }
                 });
                 predioGeoJSON = null;
@@ -2114,6 +2192,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 document.getElementById('kml-predio-file').value = '';
                 document.getElementById('kml-plan-file').value = '';
                 document.getElementById('kml-parcelas-file').value = '';
+                document.getElementById('kml-caminos-file').value = '';
                 document.getElementById('inputSupPredio').value = '0.00';
                 document.getElementById('inputSupAreaProyecto').value = '0.00';
                 document.getElementById('inputCatRojo').value = '0.00';
@@ -2126,6 +2205,8 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 actualizarSuperficientes();
                 updateLayerControl({ ...getVisibleUserLayers(), "Ordenamiento Territorial": mapLayers.ordenamiento });
                 document.getElementById('map-coordinates-display').innerHTML = `Lat: ---, Lng: ---`;
+                // Reset legend
+                ['predio','plan','parcelas','caminos'].forEach(k => updateLegendItem(k, false));
                 showMapStatus('Capas de usuario removidas.', 'success');
             });
             document.getElementById('btn-map-fit').addEventListener('click', fitToLayers);

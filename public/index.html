@@ -1278,41 +1278,7 @@
                                     </div>
                                 </div>
 
-                                <!-- REFERENCIAS DEL MAPA -->
-                                <div id="map-legend-container" style="margin-top:12px; padding:10px 14px; background:#fff; border:1px solid #ddd; border-radius:6px;">
-                                    <div style="font-weight:bold; font-size:0.92em; color:#333; border-bottom:1px solid #ddd; padding-bottom:6px; margin-bottom:8px;">📍 Referencias de Capas Cargadas</div>
-                                    <div id="map-legend-items" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:6px 20px; font-size:0.88em;">
-                                        <div class="legend-item" id="legend-predio" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
-                                            <span style="display:inline-block; width:28px; height:5px; background:#ed07ed; border-radius:3px; flex-shrink:0;"></span>
-                                            <span>Polígono del Predio</span>
-                                            <span id="legend-predio-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
-                                        </div>
-                                        <div class="legend-item" id="legend-plan" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
-                                            <span style="display:inline-block; width:28px; height:5px; background:#06f1f1; border-radius:3px; flex-shrink:0;"></span>
-                                            <span>Área del Plan Técnico</span>
-                                            <span id="legend-plan-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
-                                        </div>
-                                        <div class="legend-item" id="legend-parcelas" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
-                                            <span style="display:inline-block; width:14px; height:14px; background:#ed6e07; border-radius:50%; flex-shrink:0;"></span>
-                                            <span>Parcelas de Muestreo</span>
-                                            <span id="legend-parcelas-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
-                                        </div>
-                                        <div class="legend-item" id="legend-caminos" style="display:flex; align-items:center; gap:8px; opacity:0.4;">
-                                            <span style="display:inline-block; width:28px; height:5px; background:#1a1a1a; border-radius:3px; flex-shrink:0; border-top: 3px dashed #1a1a1a; background:transparent;"></span>
-                                            <span>Caminos / Cortafuegos</span>
-                                            <span id="legend-caminos-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Sin cargar</span>
-                                        </div>
-                                        <div class="legend-item" id="legend-ordenamiento" style="display:flex; align-items:center; gap:8px;">
-                                            <span style="display:inline-flex; gap:3px; flex-shrink:0;">
-                                                <span style="display:inline-block; width:9px; height:14px; background:#dc3545; border-radius:2px;"></span>
-                                                <span style="display:inline-block; width:9px; height:14px; background:#ffc107; border-radius:2px;"></span>
-                                                <span style="display:inline-block; width:9px; height:14px; background:#28a745; border-radius:2px;"></span>
-                                            </span>
-                                            <span>Ordenamiento OTBN</span>
-                                            <span id="legend-ordenamiento-status" style="margin-left:auto; font-size:0.82em; color:#aaa;">Cargando…</span>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 
                                 <div class="map-button-row">
                                     <button class="map-btn clear" id="btn-map-clear">Limpiar Capas</button>
@@ -1889,20 +1855,45 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
             }
 
-            // Actualizar leyenda visual
+            // ---- LEYENDA FLOTANTE DENTRO DEL MAPA (estilo index_POA) ----
+            let mapLegendControl = null;
+
+            const legendDefs = {
+                predio:       { type: 'line',   color: '#ed07ed', label: 'Polígono del Predio' },
+                plan:         { type: 'line',   color: '#06f1f1', label: 'Área del Plan Técnico' },
+                parcelas:     { type: 'circle', color: '#ed6e07', label: 'Parcelas de Muestreo' },
+                caminos:      { type: 'dash',   color: '#1a1a1a', label: 'Caminos / Cortafuegos' },
+                ordenamiento: { type: 'otbn',                     label: 'Ordenamiento OTBN' }
+            };
+
+            function buildMapLegend() {
+                if (mapLegendControl) { map.removeControl(mapLegendControl); mapLegendControl = null; }
+                const activeKeys = Object.keys(legendDefs).filter(k => mapLayers[k] && map.hasLayer(mapLayers[k]));
+                if (activeKeys.length === 0) return;
+
+                mapLegendControl = L.control({ position: 'bottomleft' });
+                mapLegendControl.onAdd = function() {
+                    const div = L.DomUtil.create('div');
+                    div.style.cssText = 'background:rgba(255,255,255,0.93);padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.8;box-shadow:0 2px 6px rgba(0,0,0,0.25);pointer-events:none;min-width:180px;';
+                    let html = '<strong style="font-size:12px;display:block;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:6px;">Referencias</strong>';
+                    activeKeys.forEach(k => {
+                        const d = legendDefs[k];
+                        let icon = '';
+                        if (d.type === 'line')   icon = `<span style="display:inline-block;width:22px;height:4px;background:${d.color};border-radius:2px;vertical-align:middle;margin-right:7px;"></span>`;
+                        if (d.type === 'circle') icon = `<span style="display:inline-block;width:11px;height:11px;background:${d.color};border-radius:50%;vertical-align:middle;margin-right:7px;"></span>`;
+                        if (d.type === 'dash')   icon = `<span style="display:inline-block;width:22px;height:0;border-top:2px dashed ${d.color};vertical-align:middle;margin-right:7px;"></span>`;
+                        if (d.type === 'otbn')   icon = `<span style="display:inline-flex;gap:2px;vertical-align:middle;margin-right:7px;"><span style="display:inline-block;width:7px;height:12px;background:#dc3545;border-radius:1px;"></span><span style="display:inline-block;width:7px;height:12px;background:#ffc107;border-radius:1px;"></span><span style="display:inline-block;width:7px;height:12px;background:#28a745;border-radius:1px;"></span></span>`;
+                        html += `<div style="display:flex;align-items:center;">${icon}<span>${d.label}</span></div>`;
+                    });
+                    div.innerHTML = html;
+                    return div;
+                };
+                mapLegendControl.addTo(map);
+            }
+
             function updateLegendItem(key, loaded) {
-                const item = document.getElementById('legend-' + key);
-                const status = document.getElementById('legend-' + key + '-status');
-                if (!item || !status) return;
-                if (loaded) {
-                    item.style.opacity = '1';
-                    status.textContent = '✔ Cargada';
-                    status.style.color = '#1a1a1a';
-                } else {
-                    item.style.opacity = '0.4';
-                    status.textContent = 'Sin cargar';
-                    status.style.color = '#aaa';
-                }
+                // Ahora solo rebuildeamos la leyenda flotante
+                buildMapLegend();
             }
 
             function loadOrdenamientoFromServer() {
@@ -1929,16 +1920,14 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                         updateLayerControl(overlayLayers);
 
                         showMapStatus('Capa de Ordenamiento cargada desde el servidor.', 'success');
-                        const legOrd = document.getElementById('legend-ordenamiento-status');
-                        if (legOrd) { legOrd.textContent = '✔ Cargada'; legOrd.style.color = '#1a1a1a'; }
+                        buildMapLegend();
                         calcularInterseccionesYSuperficies();
                         calculatePlanCategoriesIntersection(); 
                     })
                     .catch(error => {
                         console.error('Error al cargar Ordenamiento.json:', error);
                         showMapStatus('Error al cargar la capa de Ordenamiento desde el servidor.', 'error');
-                        const legOrd = document.getElementById('legend-ordenamiento-status');
-                        if (legOrd) { legOrd.textContent = 'No disponible'; legOrd.style.color = '#dc3545'; }
+                        buildMapLegend();
                     });
             }
             

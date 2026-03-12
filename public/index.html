@@ -1086,17 +1086,26 @@
             <div class="input-section">
                 <h2 class="main-section-title">1. TIPO DE PLAN</h2>
                 <fieldset class="input-fieldset">
-                    <legend>Seleccione el Tipo de Plan</legend>
-                    <div class="form-grid" style="grid-template-columns: max-content 1fr;"> 
-                        <label for="selectTipoPlan">Tipo de Plan:</label>
-                        <select id="selectTipoPlan">
-                            <option value="manejo">Plan de Manejo</option>
-                            <option value="conservacion">Plan de Conservación</option>
-                            <option value="cambio_uso">Plan de Cambio de Uso de Suelo</option>
-                            <option value="control_arbustivas">Control de Arbustivas</option>
-                            <option value="apertura_caminos">Apertura de Caminos - Cortafuegos</option>
-                        </select>
+                    <legend>Seleccione el/los Tipo/s de Plan</legend>
+                    <p style="font-size:0.9em; color:#555; margin-bottom:12px;">Puede seleccionar una o más actividades. Cada actividad tendrá su propio polígono KML y su columna de superficies OTBN en la Sección 9.</p>
+                    <div id="actividadesSelectorGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                        <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
+                            <input type="checkbox" class="chkActividad" value="manejo" id="chk_manejo"> &nbsp;Plan de Manejo
+                        </label>
+                        <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
+                            <input type="checkbox" class="chkActividad" value="conservacion" id="chk_conservacion"> &nbsp;Plan de Conservación
+                        </label>
+                        <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
+                            <input type="checkbox" class="chkActividad" value="cambio_uso" id="chk_cambio_uso"> &nbsp;Plan de Cambio de Uso de Suelo
+                        </label>
+                        <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
+                            <input type="checkbox" class="chkActividad" value="control_arbustivas" id="chk_control_arbustivas"> &nbsp;Control de Arbustivas
+                        </label>
+                        <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
+                            <input type="checkbox" class="chkActividad" value="apertura_caminos" id="chk_apertura_caminos"> &nbsp;Apertura de Caminos - Cortafuegos
+                        </label>
                     </div>
+                    <p id="actividadesWarning" style="color:#dc3545; font-size:0.88em; margin-top:8px; display:none;">⚠ Debe seleccionar al menos una actividad para habilitar los polígonos KML y la tabla OTBN.</p>
                 </fieldset>
     
                 <h2 class="main-section-title">2. DATOS DEL TITULAR REGISTRAL DEL INMUEBLE</h2>
@@ -1226,20 +1235,45 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="map-layer-control">
-                                        <h4>
-                                            <span class="map-color-indicator" style="background-color: #06f1f1;"></span>
-                                            Área del Plan Técnico
-                                        </h4>
+                                    <!-- SLOTS KML POR ACTIVIDAD — se muestran/ocultan según checkboxes de Sección 1 -->
+                                    <div class="map-layer-control actividad-kml-slot" data-actividad="manejo" style="display:none;">
+                                        <h4><span class="map-color-indicator" style="background-color: #06f1f1;"></span>Plan de Manejo</h4>
                                         <div class="map-file-input-group">
-                                            <label for="kml-plan-file">Cargar KML:</label>
-                                            <input type="file" id="kml-plan-file" accept=".kml" />
+                                            <label for="kml-manejo-file">Cargar KML:</label>
+                                            <input type="file" id="kml-manejo-file" accept=".kml" />
                                         </div>
                                         <div class="map-checkbox-group">
-                                            <label>
-                                                <input type="checkbox" id="kml-plan-visible" checked />
-                                                Mostrar capa
-                                            </label>
+                                            <label><input type="checkbox" id="kml-manejo-visible" checked /> Mostrar capa</label>
+                                        </div>
+                                    </div>
+                                    <div class="map-layer-control actividad-kml-slot" data-actividad="conservacion" style="display:none;">
+                                        <h4><span class="map-color-indicator" style="background-color: #0055ff;"></span>Plan de Conservación</h4>
+                                        <div class="map-file-input-group">
+                                            <label for="kml-conservacion-file">Cargar KML:</label>
+                                            <input type="file" id="kml-conservacion-file" accept=".kml" />
+                                        </div>
+                                        <div class="map-checkbox-group">
+                                            <label><input type="checkbox" id="kml-conservacion-visible" checked /> Mostrar capa</label>
+                                        </div>
+                                    </div>
+                                    <div class="map-layer-control actividad-kml-slot" data-actividad="cambio_uso" style="display:none;">
+                                        <h4><span class="map-color-indicator" style="background-color: #ff7700;"></span>Cambio de Uso de Suelo</h4>
+                                        <div class="map-file-input-group">
+                                            <label for="kml-cambio_uso-file">Cargar KML:</label>
+                                            <input type="file" id="kml-cambio_uso-file" accept=".kml" />
+                                        </div>
+                                        <div class="map-checkbox-group">
+                                            <label><input type="checkbox" id="kml-cambio_uso-visible" checked /> Mostrar capa</label>
+                                        </div>
+                                    </div>
+                                    <div class="map-layer-control actividad-kml-slot" data-actividad="control_arbustivas" style="display:none;">
+                                        <h4><span class="map-color-indicator" style="background-color: #88cc00;"></span>Control de Arbustivas</h4>
+                                        <div class="map-file-input-group">
+                                            <label for="kml-control_arbustivas-file">Cargar KML:</label>
+                                            <input type="file" id="kml-control_arbustivas-file" accept=".kml" />
+                                        </div>
+                                        <div class="map-checkbox-group">
+                                            <label><input type="checkbox" id="kml-control_arbustivas-visible" checked /> Mostrar capa</label>
                                         </div>
                                     </div>
                                     
@@ -1260,18 +1294,18 @@
                                         </div>
                                     </div>
 
-                                    <div class="map-layer-control">
+                                    <div class="map-layer-control actividad-kml-slot" data-actividad="apertura_caminos" style="display:none;">
                                         <h4>
                                             <span class="map-color-indicator" style="background-color: #1a1a1a;"></span>
                                             Apertura de Caminos / Cortafuegos
                                         </h4>
                                         <div class="map-file-input-group">
-                                            <label for="kml-caminos-file">Cargar KML:</label>
-                                            <input type="file" id="kml-caminos-file" accept=".kml" />
+                                            <label for="kml-apertura_caminos-file">Cargar KML:</label>
+                                            <input type="file" id="kml-apertura_caminos-file" accept=".kml" />
                                         </div>
                                         <div class="map-checkbox-group">
                                             <label>
-                                                <input type="checkbox" id="kml-caminos-visible" checked />
+                                                <input type="checkbox" id="kml-apertura_caminos-visible" checked />
                                                 Mostrar capa
                                             </label>
                                         </div>
@@ -1307,26 +1341,11 @@
                     </div>
     
                     <h3 style="text-align:center; margin-top: 20px;">Superficies de Cobertura Boscosa por Categoría OTBN (ha)</h3>
-                    <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px 15px; align-items: center; padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; background-color: #fcfcfc;">
-                        <strong style="text-align: left; padding-left: 5px;">Categoría</strong>
-                        <strong style="text-align: center;">OTBN-Predio (ha)</strong>
-                        <strong style="text-align: center;">OTBN-Plan de Manejo (ha)</strong>
-    
-                        <label for="inputCatRojo" style="color: red; font-weight: bold;">Cat. I - Rojo:</label>
-                        <input type="number" id="inputCatRojo" step="0.01" value="0" readonly style="text-align: right;">
-                        <span id="spanPlanCatRojo" class="calculated-span" style="width: 100%;">0.00</span>
-    
-                        <label for="inputCatAmarillo" style="color: #b8b800; font-weight: bold;">Cat. II - Amarillo:</label>
-                        <input type="number" id="inputCatAmarillo" step="0.01" value="0" readonly style="text-align: right;">
-                        <span id="spanPlanCatAmarillo" class="calculated-span" style="width: 100%;">0.00</span>
-    
-                        <label for="inputCatVerde" style="color: green; font-weight: bold;">Cat. III - Verde:</label>
-                        <input type="number" id="inputCatVerde" step="0.01" value="0" readonly style="text-align: right;">
-                        <span id="spanPlanCatVerde" class="calculated-span" style="width: 100%;">0.00</span>
-                        
-                        <label for="inputSinCategorizar">Sin Categorizar:</label>
-                        <input type="number" id="inputSinCategorizar" step="0.01" value="0" style="text-align: right;">
-                        <input type="number" id="inputPlanSinCategorizar" step="0.01" value="0" style="text-align: right;">
+                    <div id="tablaOTBNContainer" style="overflow-x: auto; margin-top:10px;">
+                        <p id="otbnNoActividades" style="color:#888; font-style:italic; font-size:0.9em; text-align:center; padding:10px;">
+                            ⬆ Seleccione al menos una actividad en la Sección 1 para ver las columnas OTBN correspondientes.
+                        </p>
+                        <table id="tablaOTBN" style="width:100%; border-collapse:collapse; display:none;"></table>
                     </div>
     
                      <hr>
@@ -1623,13 +1642,118 @@
                 </div>
     
             </div>
+
+            <!-- SECCIÓN 11: DATOS DE INVENTARIO ARBUSTIVAS — visible solo si chk_control_arbustivas está activo -->
+            <div class="input-section" id="seccionArbustivas" style="display:none;">
+                <h2 class="main-section-title">11. DATOS DE INVENTARIO DE ARBUSTIVAS</h2>
+                <fieldset class="input-fieldset">
+                    <legend>Datos de Parcela, Arbustivas y Resultados</legend>
+
+                    <h3 class="sub-section-title">11.1. Metodología de Muestreo</h3>
+                    <div class="static-text-section">
+                        <p>El inventario de arbustivas utiliza las mismas unidades de muestreo que el inventario forestal. Se relevan individuos leñosos de porte arbustivo aplicando los mismos criterios de inclusión por distancia al centro de parcela. Se utilizan las mismas ecuaciones de cubicación que el inventario forestal para la ecorregión seleccionada.</p>
+                    </div>
+
+                    <h3 class="sub-section-title">11.2. Registro de Datos de Campo</h3>
+                    <fieldset class="input-fieldset">
+                        <legend>Ingreso de Arbustivas</legend>
+                        <table id="treeInputTableArb" style="margin-bottom:10px;">
+                            <thead>
+                                <tr>
+                                    <th>Especie</th>
+                                    <th>DAP (cm)</th>
+                                    <th>Alt. Total (m)</th>
+                                    <th>Alt. Fuste (m)</th>
+                                    <th>Parcela N°</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><select id="selEspecieArb"></select></td>
+                                    <td><input type="number" id="inputDAPArb" step="0.1" min="0.1"></td>
+                                    <td><input type="number" id="inputAltTotalArb" step="0.1" min="0.1"></td>
+                                    <td><input type="number" id="inputAltFusteArb" step="0.1" min="0"></td>
+                                    <td><input type="number" id="inputParcelaNumArb" step="1" min="1"></td>
+                                    <td><button id="btnAddTreeArb" style="padding:8px 14px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">+ Agregar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="sup-parcela-container" style="margin-top:10px;">
+                            <label for="supParcelasM2Arb">SUP. TOTAL MUESTREADA (m²):</label>
+                            <input type="number" id="supParcelasM2Arb" value="0" readonly>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="input-fieldset" style="margin-top:15px;">
+                        <legend>Carga desde Planilla Excel</legend>
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                            <button onclick="descargarPlanillaExcelArb()" style="padding:9px 18px; background:#198754; color:white; border:none; border-radius:5px; cursor:pointer; font-size:0.92em;">⬇ Descargar Planilla Arbustivas</button>
+                            <label style="background-color:#0d6efd; color:white; padding:9px 18px; border-radius:5px; cursor:pointer; font-size:0.92em;">
+                                📂 Cargar Planilla Excel (Arbustivas)
+                                <input type="file" id="inputCargarExcelArb" accept=".xlsx,.xls,.csv" style="display:none;">
+                            </label>
+                        </div>
+                        <div id="excelUploadStatusArb" style="display:none; padding:8px 12px; border-radius:4px; margin-top:5px;"></div>
+                        <button id="btnLimpiarCargaExcelArb" style="display:none; margin-top:6px; padding:6px 12px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; font-size:0.88em;" onclick="limpiarCargaExcelArb()">✕ Limpiar carga</button>
+                    </fieldset>
+
+                    <h4 style="margin-top:15px; margin-bottom:8px; color:#343a40;">Lista de arbustivas ingresadas:</h4>
+                    <div style="overflow-x:auto;">
+                        <table id="enteredTreesTableArb">
+                            <thead>
+                                <tr>
+                                    <th>#</th><th>Especie</th><th>DAP (cm)</th><th>Alt. Total (m)</th><th>Alt. Fuste (m)</th><th>Parcela N°</th><th class="action_column">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="sub-section-title" style="margin-top:20px;">11.3. Resultados del Inventario de Arbustivas (por Hectárea)</h3>
+                    <div class="inventory-results-section" id="arbResultsWrapper" style="display:none;">
+                        <div id="arbResultadosVolumen" class="result-table-container">
+                            <h3>PLANILLA DE VOLUMEN ARBUSTIVAS (POR HECTÁREA)</h3>
+                            <table id="tableVolumenArb"></table>
+                        </div>
+                        <div id="arbResultadosAreaBasal" class="result-table-container">
+                            <h3>PLANILLA DE ÁREA BASAL ARBUSTIVAS (POR HECTÁREA)</h3>
+                            <table id="tableAreaBasalArb"></table>
+                        </div>
+                        <div id="arbResultadosDensidad" class="result-table-container">
+                            <h3>PLANILLA DE DENSIDAD ARBUSTIVAS (POR HECTÁREA)</h3>
+                            <table id="tableDensidadArb"></table>
+                        </div>
+                        <div id="arbResultadosEstadisticos" class="result-table-container">
+                            <h3>ESTADÍSTICOS GENERALES ARBUSTIVAS (Población Total)</h3>
+                            <table id="tableEstadisticosArb">
+                                <thead>
+                                    <tr>
+                                        <th>ESTADÍSTICOS</th>
+                                        <th>N/ha</th>
+                                        <th>AB/ha (m²)</th>
+                                        <th>Vol. Fuste/ha (m³)</th>
+                                        <th>Vol. Total/ha (m³)</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:20px; padding-top:15px; border-top:1px solid #dee2e6;">
+                        <button id="btnCalcularArbustivas" style="padding:12px 22px; font-size:0.95em; background:#5cb85c; color:white; border:none; border-radius:5px; cursor:pointer; margin:8px;">Calcular Inventario Arbustivas</button>
+                        <button id="btnLimpiarArbustivas" style="padding:12px 22px; font-size:0.95em; background:#f0ad4e; color:white; border:none; border-radius:5px; cursor:pointer; margin:8px;">Limpiar Arbustivas</button>
+                    </div>
+                </fieldset>
+            </div>
             
             <div class="static-text-section-wrapper">
-                <h2 class="main-section-title">11. PLAN DE MANEJO FORESTAL</h2>
+                <h2 class="main-section-title">12. PLAN DE MANEJO FORESTAL</h2>
                 <fieldset class="input-fieldset">
                     <legend>Detalles del Plan de Manejo</legend>
     
-                    <h3 class="sub-section-title">11.1. OBJETIVOS GENERALES DEL PLAN:</h3>
+                    <h3 class="sub-section-title">12.1. OBJETIVOS GENERALES DEL PLAN:</h3>
                     <textarea id="textPlanObjetivosGenerales" class="auto-resize-textarea" rows="1">- Conservar la diversidad biológica y los procesos ecológicos fundamentales del área del proyecto.
 - Mantener y, en la medida de lo posible, mejorar la provisión de servicios ecosistémicos esenciales (ej. regulación hídrica, conservación del suelo, captura de carbono).
 - Promover el uso sostenible de los recursos forestales (si aplica según el tipo de plan), asegurando su regeneración y persistencia a largo plazo.
@@ -1637,7 +1761,7 @@
 - Integrar las actividades del plan con las necesidades y conocimientos de las comunidades locales, fomentando su participación.</textarea>
                     <div id="print-textPlanObjetivosGenerales" class="textarea-print-content"></div>
     
-                    <h3 class="sub-section-title">11.2. OBJETIVOS ESPECÍFICOS E METAS CUANTIFICABLES:</h3>
+                    <h3 class="sub-section-title">12.2. OBJETIVOS ESPECÍFICOS E METAS CUANTIFICABLES:</h3>
                     <textarea id="textPlanObjetivosEspecificos" class="auto-resize-textarea" rows="1">OBJETIVOS ESPECÍFICOS (Ejemplos, adaptar):
 - Proteger hábitats críticos para especies de flora y fauna de valor para la conservación identificadas en el área del proyecto.
 - Implementar medidas de prevención y control de incendios forestales, incluyendo mantenimiento de picadas cortafuego y capacitación.
@@ -1655,19 +1779,19 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
 - Reducir la cobertura de la especie invasora [Nombre de la especie invasora] en un [P]% en las áreas de control designadas dentro de los primeros [S] años.</textarea>
                     <div id="print-textPlanObjetivosEspecificos" class="textarea-print-content"></div>
     
-                    <h3 class="sub-section-title">11.3. DESCRIPCIÓN GENERAL DEL ÁREA E SEUS VALORES DE CONSERVAÇÃO:</h3>
+                    <h3 class="sub-section-title">12.3. DESCRIPCIÓN GENERAL DEL ÁREA E SEUS VALORES DE CONSERVAÇÃO:</h3>
                     <textarea id="textPlanDescripcionArea" class="auto-resize-textarea" rows="1">Breve descripción del tipo de bosque, relieve, hidrografía, suelos, y principales especies de flora/fauna o ecosistemas a proteger. Mencionar si hay OTBN y categoría.</textarea>
                     <div id="print-textPlanDescripcionArea" class="textarea-print-content"></div>
     
-                    <h3 class="sub-section-title">11.4. ZONIFICACIÓN E TRATAMIENTOS SILVICULTURALES/APROVECHAMIENTO (si aplica):</h3>
+                    <h3 class="sub-section-title">12.4. ZONIFICACIÓN E TRATAMIENTOS SILVICULTURALES/APROVECHAMIENTO (si aplica):</h3>
                     <textarea id="textPlanZonificacion" class="auto-resize-textarea" rows="1">Describa brevemente cómo se dividirá el área para el manejo (ej. zonas de protección, zonas de aprovechamiento). Si hay aprovechamiento: tipo de corta, especies, DAP mínimos/máximos, ciclo de corta, volumen estimado. Si hay restauración: áreas, especies a utilizar.</textarea>
                     <div id="print-textPlanZonificacion" class="textarea-print-content"></div>
     
-                    <h3 class="sub-section-title">11.5. MEDIDAS DE PROTECCIÓN E MONITOREO:</h3>
+                    <h3 class="sub-section-title">12.5. MEDIDAS DE PROTECCIÓN E MONITOREO:</h3>
                     <textarea id="textPlanProteccionMonitoreo" class="auto-resize-textarea" rows="1">Principales medidas para prevención de incendios, control de exóticas (si es un problema), protección de suelos y agua. ¿Cómo se monitoreará el cumplimiento y los impactos del plan? (ej. parcelas permanentes, recorridas).</textarea>
                     <div id="print-textPlanProteccionMonitoreo" class="textarea-print-content"></div>
     
-                    <h3 class="sub-section-title">11.6. CRONOGRAMA GENERAL DE ACTIVIDADES (Primeros 3-5 años):</h3>
+                    <h3 class="sub-section-title">12.6. CRONOGRAMA GENERAL DE ACTIVIDADES (Primeros 3-5 años):</h3>
                     <textarea id="textPlanCronograma" class="auto-resize-textarea" rows="1">Listar las principales actividades a realizar año por año para los primeros años del plan (ej. Año 1: Marcación de árboles, construcción de cortafuegos. Año 2: Inicio aprovechamiento sector A, monitoreo de regeneración, etc.).</textarea>
                     <div id="print-textPlanCronograma" class="textarea-print-content"></div>
                 </fieldset>
@@ -1707,7 +1831,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             </div>
     
             <div class="static-text-section-wrapper">
-                <h2 class="main-section-title">12. DOCUMENTACIÓN LEGAL QUE DEBE ACOMPAÑAR AL PRESENTE FORMULARIO</h2>
+                <h2 class="main-section-title">13. DOCUMENTACIÓN LEGAL QUE DEBE ACOMPAÑAR AL PRESENTE FORMULARIO</h2>
                 <div class="static-text-section">
                     <p>Las solicitudes deberán ser acompañadas de documentación que acredite los derechos sobre los inmuebles a desarrollarse los proyectos.</p>
                     <p>Los Titulares Dominiales o Adquirientes por Boletos de Compra Venta, deberán presentar copia certificada del título de propiedad o boleto de compraventa, según corresponda.</p>
@@ -1821,16 +1945,29 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             L.control.scale({ imperial: false, metric: true }).addTo(map);
 
             let predioGeoJSON = null;
-            let planGeoJSON = null;
             let ordenamientoGeoJSON = null;
+
+            // Configuración de actividades — colores y etiquetas
+            const ACTIVIDADES_CONFIG = {
+                manejo:             { label: 'Plan de Manejo',          color: '#06f1f1', dashArray: null },
+                conservacion:       { label: 'Plan de Conservación',    color: '#0055ff', dashArray: null },
+                cambio_uso:         { label: 'Cambio de Uso de Suelo',  color: '#ff7700', dashArray: null },
+                control_arbustivas: { label: 'Control de Arbustivas',   color: '#88cc00', dashArray: null },
+                apertura_caminos:   { label: 'Caminos / Cortafuegos',   color: '#1a1a1a', dashArray: '8, 5' },
+            };
+            // Almacenamiento de GeoJSON por actividad
+            const actividadGeoJSON = { manejo: null, conservacion: null, cambio_uso: null, control_arbustivas: null, apertura_caminos: null };
             
-            const mapLayers = { predio: null, plan: null, parcelas: null, ordenamiento: null, caminos: null };
+            const mapLayers = { predio: null, manejo: null, conservacion: null, cambio_uso: null, control_arbustivas: null, apertura_caminos: null, parcelas: null, ordenamiento: null };
             
             const mapStyles = {
-                predio: { color: '#ed07ed', weight: 3, opacity: 0.9, fillOpacity: 0.01 },
-                plan: { color: ' #06f1f1', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-                parcelas: { color: '#ed6e07', weight: 2, opacity: 1, fillOpacity: 0.8, radius: 6 },
-                caminos: { color: '#1a1a1a', weight: 1.5, opacity: 0.95, fillOpacity: 0.15, dashArray: '8, 5' },
+                predio:             { color: '#ed07ed', weight: 3, opacity: 0.9, fillOpacity: 0.01 },
+                manejo:             { color: '#06f1f1', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+                conservacion:       { color: '#0055ff', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+                cambio_uso:         { color: '#ff7700', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+                control_arbustivas: { color: '#88cc00', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+                apertura_caminos:   { color: '#1a1a1a', weight: 1.5, opacity: 0.95, fillOpacity: 0.15, dashArray: '8, 5' },
+                parcelas:           { color: '#ed6e07', weight: 2, opacity: 1, fillOpacity: 0.8, radius: 6 },
                 ordenamiento: (feature) => {
                     const cat = feature.properties.Categoria ? String(feature.properties.Categoria).toUpperCase() : '';
                     let style = { weight: 1.5, opacity: 0.8, fillOpacity: 0.4 };
@@ -1843,7 +1980,13 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             };
 
             const mapLayerTitles = {
-                predio: 'Polígono del Predio', plan: 'Área del Plan Técnico', parcelas: 'Parcelas de Muestreo', caminos: 'Apertura de Caminos / Cortafuegos'
+                predio:             'Polígono del Predio',
+                manejo:             'Plan de Manejo',
+                conservacion:       'Plan de Conservación',
+                cambio_uso:         'Cambio de Uso de Suelo',
+                control_arbustivas: 'Control de Arbustivas',
+                apertura_caminos:   'Apertura de Caminos / Cortafuegos',
+                parcelas:           'Parcelas de Muestreo',
             };
             
             const statusEl = document.getElementById('map-status');
@@ -1859,11 +2002,14 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
             let mapLegendControl = null;
 
             const legendDefs = {
-                predio:       { type: 'line',   color: '#ed07ed', label: 'Polígono del Predio' },
-                plan:         { type: 'line',   color: '#06f1f1', label: 'Área del Plan Técnico' },
-                parcelas:     { type: 'circle', color: '#ed6e07', label: 'Parcelas de Muestreo' },
-                caminos:      { type: 'dash',   color: '#1a1a1a', label: 'Caminos / Cortafuegos' },
-                ordenamiento: { type: 'otbn',                     label: 'Ordenamiento OTBN' }
+                predio:             { type: 'line',   color: '#ed07ed', label: 'Polígono del Predio' },
+                manejo:             { type: 'line',   color: '#06f1f1', label: 'Plan de Manejo' },
+                conservacion:       { type: 'line',   color: '#0055ff', label: 'Plan de Conservación' },
+                cambio_uso:         { type: 'line',   color: '#ff7700', label: 'Cambio de Uso de Suelo' },
+                control_arbustivas: { type: 'line',   color: '#88cc00', label: 'Control de Arbustivas' },
+                apertura_caminos:   { type: 'dash',   color: '#1a1a1a', label: 'Caminos / Cortafuegos' },
+                parcelas:           { type: 'circle', color: '#ed6e07', label: 'Parcelas de Muestreo' },
+                ordenamiento:       { type: 'otbn',                     label: 'Ordenamiento OTBN' }
             };
 
             function buildMapLegend() {
@@ -1922,7 +2068,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                         showMapStatus('Capa de Ordenamiento cargada desde el servidor.', 'success');
                         buildMapLegend();
                         calcularInterseccionesYSuperficies();
-                        calculatePlanCategoriesIntersection(); 
+                        getActividadesSeleccionadas().forEach(act => calculateActividadCategoriesIntersection(act));
                     })
                     .catch(error => {
                         console.error('Error al cargar Ordenamiento.json:', error);
@@ -1960,15 +2106,15 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                         
                         if (layerName === 'predio') { 
                             predioGeoJSON = geojson; 
-                        } else if (layerName === 'plan') {
-                            planGeoJSON = geojson;
+                        } else if (actividadGeoJSON.hasOwnProperty(layerName)) {
+                            actividadGeoJSON[layerName] = geojson;
                         }
 
                         mapLayers[layerName] = L.geoJSON(geojson, {
                             style: mapStyles[layerName],
                             pointToLayer: (feature, latlng) => L.circleMarker(latlng, mapStyles.parcelas),
                             onEachFeature: (feature, layer) => {
-                                 let popupContent = `<strong>${mapLayerTitles[layerName]}</strong>`;
+                                 let popupContent = `<strong>${mapLayerTitles[layerName] || layerName}</strong>`;
                                 if (feature && feature.properties) {
                                     for (const key in feature.properties) {
                                         popupContent += `<br><strong>${key}:</strong> ${feature.properties[key]}`;
@@ -1979,16 +2125,16 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                         }).addTo(map);
 
                         updateLayerControl({ ...getVisibleUserLayers(), "Ordenamiento Territorial": mapLayers.ordenamiento });
-                        showMapStatus(`Capa "${mapLayerTitles[layerName]}" cargada.`, 'success');
+                        showMapStatus(`Capa "${mapLayerTitles[layerName] || layerName}" cargada.`, 'success');
                         updateLegendItem(layerName, true);
                         
                         if (layerName === 'predio') {
                             const center = mapLayers.predio.getBounds().getCenter();
                             document.getElementById('map-coordinates-display').innerHTML = `Lat: ${center.lat.toFixed(6)}, Lng: ${center.lng.toFixed(6)}`;
                             calcularInterseccionesYSuperficies(); 
-                        } else if (layerName === 'plan') {
-                            calcularSuperficiePlan();
-                            calculatePlanCategoriesIntersection(); 
+                        } else if (actividadGeoJSON.hasOwnProperty(layerName)) {
+                            calcularSuperficieActividades();
+                            calculateActividadCategoriesIntersection(layerName);
                         }
                         
                         fitToLayers();
@@ -2010,8 +2156,7 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 var group = new L.featureGroup();
                 var hasLayers = false;
                 
-                // Se juntan todas las capas visibles en un solo grupo
-                ['predio', 'plan', 'parcelas', 'caminos'].forEach(key => {
+                ['predio', 'manejo', 'conservacion', 'cambio_uso', 'control_arbustivas', 'apertura_caminos', 'parcelas'].forEach(key => {
                     if (mapLayers[key] && map.hasLayer(mapLayers[key])) {
                         group.addLayer(mapLayers[key]);
                         hasLayers = true;
@@ -2033,25 +2178,70 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 }
             }
             
-            function calcularSuperficiePlan() {
-                if (!planGeoJSON) return;
-                try {
-                    const areaPlanM2 = turf.area(planGeoJSON);
-                    const areaPlanHa = areaPlanM2 / 10000;
-                    const areaPredioHa = parseFloat(document.getElementById('inputSupPredio').value) || 0;
-                    
-                    if (areaPredioHa > 0 && areaPlanHa > (areaPredioHa + 0.001)) {
-                         showMapStatus(`Error: El área del Plan (${areaPlanHa.toFixed(2)} ha) no puede ser mayor al área del Predio (${areaPredioHa.toFixed(2)} ha).`, 'error');
-                         document.getElementById('inputSupAreaProyecto').value = "0.00";
-                    } else {
-                        document.getElementById('inputSupAreaProyecto').value = areaPlanHa.toFixed(2);
-                        showMapStatus(`Área del Plan Técnico calculada: ${areaPlanHa.toFixed(2)} ha.`, 'success');
+            // Calcula la superficie total de todas las actividades con KML cargado
+            function calcularSuperficieActividades() {
+                let areaTotalHa = 0;
+                Object.keys(actividadGeoJSON).forEach(act => {
+                    if (actividadGeoJSON[act]) {
+                        try { areaTotalHa += turf.area(actividadGeoJSON[act]) / 10000; } catch(e) {}
                     }
-                    actualizarSuperficientes();
-                    validatePlanSurfaces();
-                } catch(e) {
-                    showMapStatus('Error calculando el área del Plan Técnico: ' + e.message, 'error');
+                });
+                const areaPredioHa = parseFloat(document.getElementById('inputSupPredio').value) || 0;
+                if (areaPredioHa > 0 && areaTotalHa > (areaPredioHa + 0.001)) {
+                    showMapStatus(`Advertencia: La suma de áreas de actividades (${areaTotalHa.toFixed(2)} ha) supera el área del Predio (${areaPredioHa.toFixed(2)} ha).`, 'error');
                 }
+                document.getElementById('inputSupAreaProyecto').value = areaTotalHa.toFixed(2);
+                actualizarSuperficientes();
+                validarSuperficiesActividades();
+            }
+            
+            // Calcula la intersección de una actividad con el OTBN y escribe en la tabla
+            function calculateActividadCategoriesIntersection(actKey) {
+                const geoJSON = actividadGeoJSON[actKey];
+                const rojoEl    = document.getElementById(`span_${actKey}_Cat_rojo`);
+                const amarilloEl= document.getElementById(`span_${actKey}_Cat_amarillo`);
+                const verdeEl   = document.getElementById(`span_${actKey}_Cat_verde`);
+                if (!geoJSON || !ordenamientoGeoJSON) {
+                    if (rojoEl)    rojoEl.textContent    = '0.00';
+                    if (amarilloEl) amarilloEl.textContent = '0.00';
+                    if (verdeEl)   verdeEl.textContent   = '0.00';
+                    return;
+                }
+                let areaRojoM2 = 0, areaAmarilloM2 = 0, areaVerdeM2 = 0;
+                try {
+                    geoJSON.features.forEach(actFeat => {
+                        ordenamientoGeoJSON.features.forEach(ordFeat => {
+                            try {
+                                const intersection = turf.intersect(actFeat.geometry, ordFeat.geometry);
+                                if (intersection) {
+                                    const area = turf.area(intersection);
+                                    const cat = (ordFeat.properties.Categoria || '').toUpperCase();
+                                    if (cat.includes('ROJO'))     areaRojoM2     += area;
+                                    else if (cat.includes('AMARILLO')) areaAmarilloM2 += area;
+                                    else if (cat.includes('VERDE'))    areaVerdeM2    += area;
+                                }
+                            } catch(e) {}
+                        });
+                    });
+                    if (rojoEl)    rojoEl.textContent    = (areaRojoM2 / 10000).toFixed(2);
+                    if (amarilloEl) amarilloEl.textContent = (areaAmarilloM2 / 10000).toFixed(2);
+                    if (verdeEl)   verdeEl.textContent   = (areaVerdeM2 / 10000).toFixed(2);
+                    validarSuperficiesActividades();
+                } catch(e) {
+                    showMapStatus('Error calculando intersección para ' + (ACTIVIDADES_CONFIG[actKey]?.label || actKey) + ': ' + e.message, 'error');
+                }
+            }
+            
+            function validarSuperficiesActividades() {
+                getActividadesSeleccionadas().forEach(actKey => {
+                    const sinCatEl = document.getElementById(`input_${actKey}_sincat`);
+                    if (sinCatEl) sinCatEl.style.border = '';
+                    const sinCat = sinCatEl ? (parseFloat(sinCatEl.value) || 0) : 0;
+                    const predioSinCat = parseFloat(document.getElementById('inputSinCategorizar').value) || 0;
+                    if (sinCat > (predioSinCat + 0.001)) {
+                        if (sinCatEl) sinCatEl.style.border = '2px solid red';
+                    }
+                });
             }
             
             function calcularInterseccionesYSuperficies() {
@@ -2097,105 +2287,47 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 }
             }
             
-            function calculatePlanCategoriesIntersection() {
-                if (!planGeoJSON || !ordenamientoGeoJSON) {
-                    document.getElementById('spanPlanCatRojo').textContent = '0.00';
-                    document.getElementById('spanPlanCatAmarillo').textContent = '0.00';
-                    document.getElementById('spanPlanCatVerde').textContent = '0.00';
-                    return;
-                }
-
-                let areaRojoM2 = 0, areaAmarilloM2 = 0, areaVerdeM2 = 0;
-
-                try {
-                    const planFeatures = planGeoJSON.features;
-                    const ordenamientoFeatures = ordenamientoGeoJSON.features;
-
-                    planFeatures.forEach(planFeature => {
-                        ordenamientoFeatures.forEach(ordenamientoFeature => {
-                            try {
-                                const intersection = turf.intersect(planFeature.geometry, ordenamientoFeature.geometry);
-                                if (intersection) {
-                                    const areaInterseccionM2 = turf.area(intersection);
-                                    const Categoria = (ordenamientoFeature.properties.Categoria || '').toUpperCase();
-                                    if (Categoria.includes('ROJO')) { areaRojoM2 += areaInterseccionM2; } 
-                                    else if (Categoria.includes('AMARILLO')) { areaAmarilloM2 += areaInterseccionM2; } 
-                                    else if (Categoria.includes('VERDE')) { areaVerdeM2 += areaInterseccionM2; }
-                                }
-                            } catch (e) { /* Ignorar errores de topología en intersecciones individuales */ }
-                        });
-                    });
-                    
-                    document.getElementById('spanPlanCatRojo').textContent = (areaRojoM2 / 10000).toFixed(2);
-                    document.getElementById('spanPlanCatAmarillo').textContent = (areaAmarilloM2 / 10000).toFixed(2);
-                    document.getElementById('spanPlanCatVerde').textContent = (areaVerdeM2 / 10000).toFixed(2);
-                    validatePlanSurfaces();
-                    
-                } catch(e) {
-                     showMapStatus('Error calculando intersección del Área del Plan: ' + e.message, 'error');
-                }
-            }
-            
-            function validatePlanSurfaces() {
-                const inputPlanSinCat = document.getElementById('inputPlanSinCategorizar');
-                inputPlanSinCat.style.border = '';
-
-                const predioSinCat = parseFloat(document.getElementById('inputSinCategorizar').value) || 0;
-                const planSinCat = parseFloat(inputPlanSinCat.value) || 0;
-
-                if (planSinCat > (predioSinCat + 0.001) ) {
-                    alert(`¡Error de Validación!\n\nLa superficie "Sin Categorizar" del área del plan (${planSinCat.toFixed(2)} ha) no puede ser mayor a la superficie "Sin Categorizar" total del predio (${predioSinCat.toFixed(2)} ha).`);
-                    inputPlanSinCat.style.border = '2px solid red';
-                    return false;
-                }
-                
-                const supAreaProyecto = parseFloat(document.getElementById('inputSupAreaProyecto').value) || 0;
-                const planRojo = parseFloat(document.getElementById('spanPlanCatRojo').textContent) || 0;
-                const planAmarillo = parseFloat(document.getElementById('spanPlanCatAmarillo').textContent) || 0;
-                const planVerde = parseFloat(document.getElementById('spanPlanCatVerde').textContent) || 0;
-                const sumaPlan = planRojo + planAmarillo + planVerde + planSinCat;
-
-                if (supAreaProyecto > 0 && sumaPlan > (supAreaProyecto + 0.001)) {
-                    alert(`¡Error de Validación!\n\nLa suma de superficies por categoría del plan (${sumaPlan.toFixed(2)} ha) no puede exceder la "Superficie del Área del Proyecto" (${supAreaProyecto.toFixed(2)} ha).`);
-                    inputPlanSinCat.style.border = '2px solid orange';
-                    return false;
-                }
-                
-                return true;
-            }
+            // (funciones reemplazadas por calculateActividadCategoriesIntersection y validarSuperficiesActividades)
 
             document.getElementById('kml-predio-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'predio'));
-            document.getElementById('kml-plan-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'plan'));
             document.getElementById('kml-parcelas-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'parcelas'));
-            document.getElementById('kml-caminos-file').addEventListener('change', (e) => loadKML(e.target.files[0], 'caminos'));
             document.getElementById('kml-predio-visible').addEventListener('change', (e) => toggleLayer('predio', e.target.checked));
-            document.getElementById('kml-plan-visible').addEventListener('change', (e) => toggleLayer('plan', e.target.checked));
             document.getElementById('kml-parcelas-visible').addEventListener('change', (e) => toggleLayer('parcelas', e.target.checked));
-            document.getElementById('kml-caminos-visible').addEventListener('change', (e) => toggleLayer('caminos', e.target.checked));
+            // Listeners dinámicos para actividades — se registran por actividad
+            Object.keys(ACTIVIDADES_CONFIG).forEach(act => {
+                const fileEl    = document.getElementById(`kml-${act}-file`);
+                const visibleEl = document.getElementById(`kml-${act}-visible`);
+                if (fileEl)    fileEl.addEventListener('change',    (e) => loadKML(e.target.files[0], act));
+                if (visibleEl) visibleEl.addEventListener('change', (e) => toggleLayer(act, e.target.checked));
+            });
             document.getElementById('btn-map-clear').addEventListener('click', () => {
-                ['predio', 'plan', 'parcelas', 'caminos'].forEach(key => {
+                ['predio', 'manejo', 'conservacion', 'cambio_uso', 'control_arbustivas', 'apertura_caminos', 'parcelas'].forEach(key => {
                     if (mapLayers[key]) { map.removeLayer(mapLayers[key]); mapLayers[key] = null; }
                 });
                 predioGeoJSON = null;
-                planGeoJSON = null; 
-                document.getElementById('kml-predio-file').value = '';
-                document.getElementById('kml-plan-file').value = '';
-                document.getElementById('kml-parcelas-file').value = '';
-                document.getElementById('kml-caminos-file').value = '';
+                Object.keys(actividadGeoJSON).forEach(k => actividadGeoJSON[k] = null);
+                ['predio', 'manejo', 'conservacion', 'cambio_uso', 'control_arbustivas', 'apertura_caminos', 'parcelas'].forEach(k => {
+                    const el = document.getElementById(`kml-${k}-file`);
+                    if (el) el.value = '';
+                });
                 document.getElementById('inputSupPredio').value = '0.00';
                 document.getElementById('inputSupAreaProyecto').value = '0.00';
                 document.getElementById('inputCatRojo').value = '0.00';
                 document.getElementById('inputCatAmarillo').value = '0.00';
                 document.getElementById('inputCatVerde').value = '0.00';
-                document.getElementById('spanPlanCatRojo').textContent = '0.00';
-                document.getElementById('spanPlanCatAmarillo').textContent = '0.00';
-                document.getElementById('spanPlanCatVerde').textContent = '0.00';
-                document.getElementById('inputPlanSinCategorizar').value = '0';
+                // Limpiar spans de cada actividad en la tabla OTBN
+                Object.keys(ACTIVIDADES_CONFIG).forEach(act => {
+                    ['rojo','amarillo','verde'].forEach(cat => {
+                        const el = document.getElementById(`span_${act}_Cat_${cat}`);
+                        if (el) el.textContent = '0.00';
+                    });
+                    const sinCatEl = document.getElementById(`input_${act}_sincat`);
+                    if (sinCatEl) sinCatEl.value = '0';
+                });
                 actualizarSuperficientes();
                 updateLayerControl({ ...getVisibleUserLayers(), "Ordenamiento Territorial": mapLayers.ordenamiento });
                 document.getElementById('map-coordinates-display').innerHTML = `Lat: ---, Lng: ---`;
-                // Reset legend
-                ['predio','plan','parcelas','caminos'].forEach(k => updateLegendItem(k, false));
+                Object.keys(mapLayers).filter(k => k !== 'ordenamiento').forEach(k => updateLegendItem(k, false));
                 showMapStatus('Capas de usuario removidas.', 'success');
             });
             document.getElementById('btn-map-fit').addEventListener('click', fitToLayers);
@@ -2205,6 +2337,106 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
                 if (map.tap) map.tap.disable();
                 map.removeControl(layerControl);
                 showMapStatus('Vista del mapa fijada. Lista para imprimir.', 'success');
+            });
+
+            // ---- FUNCIONES PARA MULTI-ACTIVIDAD ----
+
+            function getActividadesSeleccionadas() {
+                return [...document.querySelectorAll('.chkActividad:checked')].map(c => c.value);
+            }
+
+            function rebuildOTBNTable(selected) {
+                const tabla = document.getElementById('tablaOTBN');
+                const aviso = document.getElementById('otbnNoActividades');
+                if (aviso) aviso.style.display = 'none';
+                tabla.style.display = '';
+
+                const categorias = [
+                    { key: 'rojo',     label: 'Cat. I - Rojo',      color: '#dc3545', inputId: 'inputCatRojo',      editable: false },
+                    { key: 'amarillo', label: 'Cat. II - Amarillo',  color: '#b8a000', inputId: 'inputCatAmarillo',  editable: false },
+                    { key: 'verde',    label: 'Cat. III - Verde',    color: '#28a745', inputId: 'inputCatVerde',     editable: false },
+                    { key: 'sincat',   label: 'Sin Categorizar',     color: '#555',    inputId: 'inputSinCategorizar', editable: true },
+                ];
+
+                // Encabezado
+                let html = `<thead><tr style="background:#f1f3f5;">
+                    <th style="text-align:left; padding:8px 10px; border:1px solid #dee2e6; min-width:160px;">Categoría</th>
+                    <th style="text-align:center; padding:8px 10px; border:1px solid #dee2e6; min-width:130px;">OTBN-Predio (ha)</th>`;
+                if (!selected || selected.length === 0) {
+                    html += `<th style="text-align:center; padding:8px 10px; border:1px solid #dee2e6; color:#888; font-style:italic;">← Seleccione actividades para ver columnas OTBN por actividad</th>`;
+                } else {
+                    selected.forEach(act => {
+                        const cfg = ACTIVIDADES_CONFIG[act];
+                        html += `<th style="text-align:center; padding:8px 10px; border:1px solid #dee2e6; min-width:150px; border-top:3px solid ${cfg.color};">
+                            <span style="display:inline-block; width:12px; height:12px; background:${cfg.color}; border-radius:2px; margin-right:5px; vertical-align:middle;"></span>
+                            OTBN - ${cfg.label} (ha)
+                        </th>`;
+                    });
+                }
+                html += `</tr></thead><tbody>`;
+
+                // Filas por categoría
+                categorias.forEach(cat => {
+                    html += `<tr>
+                        <td style="text-align:left; font-weight:bold; color:${cat.color}; padding:7px 10px; border:1px solid #dee2e6;">${cat.label}</td>
+                        <td style="text-align:right; padding:7px 10px; border:1px solid #dee2e6;">
+                            <input type="number" id="${cat.inputId}" step="0.01" value="0" ${cat.editable ? '' : 'readonly'} style="text-align:right; width:90px; padding:4px 6px; border:1px solid #ced4da; border-radius:4px; background:${cat.editable ? '#fff' : '#e9ecef'};">
+                        </td>`;
+                    if (selected && selected.length > 0) {
+                        selected.forEach(act => {
+                            if (cat.editable) {
+                                html += `<td style="text-align:right; padding:7px 10px; border:1px solid #dee2e6;">
+                                    <input type="number" id="input_${act}_sincat" step="0.01" value="0" style="text-align:right; width:90px; padding:4px 6px; border:1px solid #ced4da; border-radius:4px;">
+                                </td>`;
+                            } else {
+                                html += `<td style="text-align:right; padding:7px 10px; border:1px solid #dee2e6;">
+                                    <span id="span_${act}_Cat_${cat.key}" class="calculated-span" style="display:inline-block; min-width:80px; text-align:right;">0.00</span>
+                                </td>`;
+                            }
+                        });
+                    } else {
+                        html += `<td style="border:1px solid #dee2e6; background:#f8f9fa;"></td>`;
+                    }
+                    html += `</tr>`;
+                });
+                html += `</tbody>`;
+                tabla.innerHTML = html;
+
+                // Registrar listeners en los campos "Sin Categorizar" por actividad
+                if (selected) selected.forEach(act => {
+                    const el = document.getElementById(`input_${act}_sincat`);
+                    if (el) el.addEventListener('input', validarSuperficiesActividades);
+                });
+                // Listener del Sin Categorizar del predio
+                const scEl = document.getElementById('inputSinCategorizar');
+                if (scEl) scEl.addEventListener('input', actualizarSuperficientes);
+            }
+
+            function onActividadChange() {
+                const selected = getActividadesSeleccionadas();
+                const aviso = document.getElementById('actividadesWarning');
+                if (aviso) aviso.style.display = selected.length === 0 ? 'block' : 'none';
+
+                // Mostrar/ocultar slots KML por actividad
+                document.querySelectorAll('.actividad-kml-slot').forEach(slot => {
+                    slot.style.display = selected.includes(slot.dataset.actividad) ? '' : 'none';
+                });
+
+                // Reconstruir tabla OTBN
+                rebuildOTBNTable(selected);
+
+                // Recalcular intersecciones para actividades con KML cargado
+                selected.forEach(act => {
+                    if (actividadGeoJSON[act]) calculateActividadCategoriesIntersection(act);
+                });
+
+                // Recalcular área total
+                calcularSuperficieActividades();
+            }
+
+            // Listeners para checkboxes de actividades
+            document.querySelectorAll('.chkActividad').forEach(chk => {
+                chk.addEventListener('change', onActividadChange);
             });
         
         const T_VALUES_95_CI = { 1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228, 15: 2.131, 20: 2.086, 25: 2.060, 30: 2.042, Infinity: 1.96 };
@@ -3238,7 +3470,7 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
         const dapClasses = [ { name: 'I (<10cm)', min: 0, max: 9.99, label: "< 10 cm" }, { name: 'II (10-14.9cm)', min: 10, max: 14.99, label: "10-14,9 cm" }, { name: 'III (15-19.9cm)', min: 15, max: 19.99, label: "15-19,9 cm" }, { name: 'IV (20-24.9cm)', min: 20, max: 24.99, label: "20-24,9 cm" }, { name: 'V (25-29.9cm)', min: 25, max: 29.99, label: "25-29,9 cm" }, { name: 'VI (30-34.9cm)', min: 30, max: 34.99, label: "30-34,9 cm" }, { name: 'VII (35-39.9cm)', min: 35, max: 39.99, label: "35-39,9 cm" }, { name: 'VIII (40-44.9cm)', min: 40, max: 44.99, label: "40-44,9 cm" }, { name: 'IX (45-49.9cm)', min: 45, max: 49.99, label: "45-49,9 cm" }, { name: 'X (>50cm)', min: 50, max: Infinity, label: ">50 cm" } ];
         let enteredTrees = []; let chartVolumenEspecieInstance = null; let chartDensidadEspecieInstance = null; let chartDistribucionDAPInstance = null; let chartVolumenClaseDAPInstance = null; let chartABDensidadClaseDAPInstance = null; let chartToneladasClaseDAPInstance = null; let resultsBySpeciesDAPGlobal = {}; 
         
-        const CategoriasSuperficie = [ { intervenida: document.getElementById('inputSupIntervenidaCatRojo'), perdida: document.getElementById('inputPerdidaNetaCatRojo'), total: document.getElementById('inputCatRojo'), nombre: 'Roja' }, { intervenida: document.getElementById('inputSupIntervenidaCatAmarilla'), perdida: document.getElementById('inputPerdidaNetaCatAmarilla'), total: document.getElementById('inputCatAmarillo'), nombre: 'Amarilla' }, { intervenida: document.getElementById('inputSupIntervenidaCatVerde'), perdida: document.getElementById('inputPerdidaNetaCatVerde'), total: document.getElementById('inputCatVerde'), nombre: 'Verde' }, { intervenida: document.getElementById('inputSupIntervenidaSinCat'), perdida: document.getElementById('inputPerdidaNetaSinCat'), total: document.getElementById('inputSinCategorizar'), nombre: 'Sin Categorizar' } ];
+        function getCategoriasSuperficie() { return [ { intervenida: document.getElementById('inputSupIntervenidaCatRojo'), perdida: document.getElementById('inputPerdidaNetaCatRojo'), total: document.getElementById('inputCatRojo'), nombre: 'Roja' }, { intervenida: document.getElementById('inputSupIntervenidaCatAmarilla'), perdida: document.getElementById('inputPerdidaNetaCatAmarilla'), total: document.getElementById('inputCatAmarillo'), nombre: 'Amarilla' }, { intervenida: document.getElementById('inputSupIntervenidaCatVerde'), perdida: document.getElementById('inputPerdidaNetaCatVerde'), total: document.getElementById('inputCatVerde'), nombre: 'Verde' }, { intervenida: document.getElementById('inputSupIntervenidaSinCat'), perdida: document.getElementById('inputPerdidaNetaSinCat'), total: document.getElementById('inputSinCategorizar'), nombre: 'Sin Categorizar' } ]; }
         
         function validarSuperficiesCategoria(intervenidaInput, perdidaInput, totalInput, CategoriaNombre) {
             const intervenida = parseFloat(intervenidaInput.value) || 0;
@@ -3309,7 +3541,7 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
             let totalIntervenida = 0;
             let totalPerdidaNeta = 0;
 
-            CategoriasSuperficie.forEach(cat => {
+            getCategoriasSuperficie().forEach(cat => {
                 if (!validarSuperficiesCategoria(cat.intervenida, cat.perdida, cat.total, cat.nombre)) {
                     allCategoriesValid = false;
                 }
@@ -3325,7 +3557,7 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
 
             if (allCategoriesValid && supAreaProyecto > 0 && totalAfectada > (supAreaProyecto + 0.001)) {
                 alert(`¡Error de Validación General!\n\nLa suma total de intervención y pérdida (${totalAfectada.toFixed(2)} ha) no puede superar la "Superficie del Área del Proyecto" (${supAreaProyecto.toFixed(2)} ha).`);
-                CategoriasSuperficie.forEach(cat => {
+                getCategoriasSuperficie().forEach(cat => {
                     cat.intervenida.style.border = '2px solid orange';
                     cat.perdida.style.border = '2px solid orange';
                 });
@@ -3584,7 +3816,7 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
         }
 
         function clearCalculations() { const tablesToClear = ['tableVolumen', 'tableAreaBasal', 'tableDensidad', 'tableToneladas', 'tablePosibilidad', 'tableResumenParcelasAB', 'tableDetalleParcelasObservado', 'tableDetalleParcelasHa']; tablesToClear.forEach(id => { const table = document.getElementById(id); if (table) table.innerHTML = ''; }); document.getElementById('tableEstadisticosGenerales').querySelector('tbody').innerHTML = ''; if(chartVolumenClaseDAPInstance) chartVolumenClaseDAPInstance.destroy(); if(chartABDensidadClaseDAPInstance) chartABDensidadClaseDAPInstance.destroy(); if(chartToneladasClaseDAPInstance) chartToneladasClaseDAPInstance.destroy(); if(chartVolumenEspecieInstance) chartVolumenEspecieInstance.destroy(); if(chartDensidadEspecieInstance) chartDensidadEspecieInstance.destroy(); if(chartDistribucionDAPInstance) chartDistribucionDAPInstance.destroy(); document.getElementById('graficosContainer').style.display = 'none'; document.getElementById('inventoryResultsWrapper').style.display = 'none'; document.getElementById('graficosInventarioContainer').style.display = 'none'; resultsBySpeciesDAPGlobal = {}; alert('Todos los cálculos y tablas generadas han sido borrados.'); }
-        function clearAllInputs() { if (confirm('¿Está seguro que desea borrar TODOS los datos ingresados en el formulario, incluyendo la lista de árboles? Esta acción no se puede deshacer.')) { document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="tel"], select').forEach(el => { if(el.type !== 'checkbox' && el.id !== 'inputProvincia' && !el.readOnly) { el.value = ''; } }); document.querySelectorAll('.auto-resize-textarea').forEach(el => { const originalTextMap = { "textPlanObjetivosGenerales": "- Conservar la diversidad biológica y los procesos ecológicos fundamentales del área del proyecto.\n- Mantener y, en la medida de lo posible, mejorar la provisión de servicios ecosistémicos esenciales (ej. regulación hídrica, conservación del suelo, captura de carbono).\n- Promover el uso sostenible de los recursos forestales (si aplica según el tipo de plan), asegurando su regeneración y persistencia a largo plazo.\n- Cumplir con el marco normativo vigente en materia de protección y manejo de bosques nativos.\n- Integrar las actividades del plan con las necesidades y conocimientos de las comunidades locales, fomentando su participación.", "textPlanObjetivosEspecificos": "OBJETIVOS ESPECÍFICOS (Ejemplos, adaptar):\n- Proteger hábitats críticos para especies de flora y fauna de valor para la conservación identificadas en el área del proyecto.\n- Implementar medidas de prevención y control de incendios forestales, incluyendo mantenimiento de picadas cortafuego y capacitación.\n- Controlar y erradicar especies exóticas invasoras que amenacen la integridad del ecosistema nativo en áreas prioritarias.\n- (Si aplica) Realizar un aprovechamiento forestal selectivo y de bajo impacto, enfocado en la extracción de productos maderables y no maderables de forma sostenible, minimizando el daño al bosque remanente.\n- (Si aplica) Establecer un programa de enriquecimiento o restauración en áreas degradadas dentro del polígono de intervención, utilizando especies nativas locales.\n- Monitorear periódicamente los indicadores clave de la salud del ecosistema y el impacto de las actividades de manejo.\n- Desarrollar programas de educación ambiental y sensibilización dirigidos a los actores relevantes.\n\nMETAS CUANTIFICABLES (Ejemplos, adaptar):\n- Mantener el 100% de la superficie de bosque nativo categorizada como Roja (Cat. I) sin intervención directa que altere su estructura y composición, durante toda la vigencia del plan.\n- Realizar patrullajes de prevención de incendios y detección de actividades ilícitas en [X] km de perímetro/senderos al menos [Y] veces al mes durante la temporada de riesgo.\n- (Si aplica) Limitar la extracción anual de madera a un máximo de [Z] m³/ha en las áreas de aprovechamiento designadas, basándose en los resultados del inventario forestal y tasas de crecimiento.\n- (Si aplica) Reforestar/Enriquecer [N] hectáreas con [M] individuos de especies nativas clave por hectárea en los primeros [T] años del plan.\n- Reducir la cobertura de la especie invasora [Nombre de la especie invasora] en un [P]% en las áreas de control designadas dentro de los primeros [S] años.", "textPlanDescripcionArea": "Breve descripción del tipo de bosque, relieve, hidrografía, suelos, y principales especies de flora/fauna o ecosistemas a proteger. Mencionar si hay OTBN y categoría.", "textPlanZonificacion": "Describa brevemente cómo se dividirá el área para el manejo (ej. zonas de protección, zonas de aprovechamiento). Si hay aprovechamiento: tipo de corta, especies, DAP mínimos/máximos, ciclo de corta, volumen estimado. Si hay restauración: áreas, especies a utilizar.", "textPlanProteccionMonitoreo": "Principales medidas para prevención de incendios, control de exóticas (si es un problema), protección de suelos y agua. ¿Cómo se monitoreará el cumplimiento y los impactos del plan? (ej. parcelas permanentes, recorridas).", "textPlanCronograma": "Listar las principales actividades a realizar año por año para los primeros años del plan (ej. Año 1: Marcación de árboles, construcción de cortafuegos. Año 2: Inicio aprovechamiento sector A, monitoreo de regeneración, etc.)." }; el.value = originalTextMap[el.id] || ''; setupPlaceholderTextarea(el); autoResizeTextarea(el); }); document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false); document.getElementById('inputProvincia').value = "CORRIENTES"; document.getElementById('selectTipoPlan').value = "manejo"; document.getElementById('inputSupAreaProyecto').value = "0.00"; document.getElementById('inputSinCategorizar').value = "0"; document.getElementById('inputPlanSinCategorizar').value = '0'; enteredTrees = []; renderEnteredTrees(); updateSampledArea(); document.getElementById('btn-map-clear').click(); alert('Todos los datos de entrada han sido borrados.'); } }
+        function clearAllInputs() { if (confirm('¿Está seguro que desea borrar TODOS los datos ingresados en el formulario, incluyendo la lista de árboles? Esta acción no se puede deshacer.')) { document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="tel"], select').forEach(el => { if(el.type !== 'checkbox' && el.id !== 'inputProvincia' && !el.readOnly) { el.value = ''; } }); document.querySelectorAll('.auto-resize-textarea').forEach(el => { const originalTextMap = { "textPlanObjetivosGenerales": "- Conservar la diversidad biológica y los procesos ecológicos fundamentales del área del proyecto.\n- Mantener y, en la medida de lo posible, mejorar la provisión de servicios ecosistémicos esenciales (ej. regulación hídrica, conservación del suelo, captura de carbono).\n- Promover el uso sostenible de los recursos forestales (si aplica según el tipo de plan), asegurando su regeneración y persistencia a largo plazo.\n- Cumplir con el marco normativo vigente en materia de protección y manejo de bosques nativos.\n- Integrar las actividades del plan con las necesidades y conocimientos de las comunidades locales, fomentando su participación.", "textPlanObjetivosEspecificos": "OBJETIVOS ESPECÍFICOS (Ejemplos, adaptar):\n- Proteger hábitats críticos para especies de flora y fauna de valor para la conservación identificadas en el área del proyecto.\n- Implementar medidas de prevención y control de incendios forestales, incluyendo mantenimiento de picadas cortafuego y capacitación.\n- Controlar y erradicar especies exóticas invasoras que amenacen la integridad del ecosistema nativo en áreas prioritarias.\n- (Si aplica) Realizar un aprovechamiento forestal selectivo y de bajo impacto, enfocado en la extracción de productos maderables y no maderables de forma sostenible, minimizando el daño al bosque remanente.\n- (Si aplica) Establecer un programa de enriquecimiento o restauración en áreas degradadas dentro del polígono de intervención, utilizando especies nativas locales.\n- Monitorear periódicamente los indicadores clave de la salud del ecosistema y el impacto de las actividades de manejo.\n- Desarrollar programas de educación ambiental y sensibilización dirigidos a los actores relevantes.\n\nMETAS CUANTIFICABLES (Ejemplos, adaptar):\n- Mantener el 100% de la superficie de bosque nativo categorizada como Roja (Cat. I) sin intervención directa que altere su estructura y composición, durante toda la vigencia del plan.\n- Realizar patrullajes de prevención de incendios y detección de actividades ilícitas en [X] km de perímetro/senderos al menos [Y] veces al mes durante la temporada de riesgo.\n- (Si aplica) Limitar la extracción anual de madera a un máximo de [Z] m³/ha en las áreas de aprovechamiento designadas, basándose en los resultados del inventario forestal y tasas de crecimiento.\n- (Si aplica) Reforestar/Enriquecer [N] hectáreas con [M] individuos de especies nativas clave por hectárea en los primeros [T] años del plan.\n- Reducir la cobertura de la especie invasora [Nombre de la especie invasora] en un [P]% en las áreas de control designadas dentro de los primeros [S] años.", "textPlanDescripcionArea": "Breve descripción del tipo de bosque, relieve, hidrografía, suelos, y principales especies de flora/fauna o ecosistemas a proteger. Mencionar si hay OTBN y categoría.", "textPlanZonificacion": "Describa brevemente cómo se dividirá el área para el manejo (ej. zonas de protección, zonas de aprovechamiento). Si hay aprovechamiento: tipo de corta, especies, DAP mínimos/máximos, ciclo de corta, volumen estimado. Si hay restauración: áreas, especies a utilizar.", "textPlanProteccionMonitoreo": "Principales medidas para prevención de incendios, control de exóticas (si es un problema), protección de suelos y agua. ¿Cómo se monitoreará el cumplimiento y los impactos del plan? (ej. parcelas permanentes, recorridas).", "textPlanCronograma": "Listar las principales actividades a realizar año por año para los primeros años del plan (ej. Año 1: Marcación de árboles, construcción de cortafuegos. Año 2: Inicio aprovechamiento sector A, monitoreo de regeneración, etc.)." }; el.value = originalTextMap[el.id] || ''; setupPlaceholderTextarea(el); autoResizeTextarea(el); }); document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false); document.getElementById('inputProvincia').value = "CORRIENTES"; document.querySelectorAll('.chkActividad').forEach(chk => { chk.checked = false; }); onActividadChange(); document.getElementById('inputSupAreaProyecto').value = "0.00"; document.getElementById('inputSinCategorizar') && (document.getElementById('inputSinCategorizar').value = "0"); enteredTrees = []; renderEnteredTrees(); updateSampledArea(); document.getElementById('btn-map-clear').click(); alert('Todos los datos de entrada han sido borrados.'); } }
         
         function actualizarSuperficientes() {
             actualizarSuperficiesGenerales();
@@ -3600,21 +3832,24 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
         document.getElementById('checkMismoTitularProyecto').addEventListener('change', (e) => { const fields = [ { from: 'inputTitular', to: 'inputTitularProyectoNombre' }, { from: 'inputDNI', to: 'inputTitularProyectoCUIT' }, { from: 'inputTitularDomicilio', to: 'inputTitularProyectoDomicilio' }, { from: 'inputTitularTelefono', to: 'inputTitularProyectoTelefono' }, { from: 'inputTitularEmail', to: 'inputTitularProyectoEmail' } ]; fields.forEach(f => { const toEl = document.getElementById(f.to); toEl.value = e.target.checked ? document.getElementById(f.from).value : ''; toEl.readOnly = e.target.checked; }); });
         document.getElementById('checkRepLegalNoAplica').addEventListener('change', (e) => { const fields = ['inputRepLegalNombre', 'inputRepLegalDNI', 'inputRepLegalCargo', 'inputRepLegalDomicilio', 'inputRepLegalTelefono']; fields.forEach(id => { const el = document.getElementById(id); el.value = ''; el.disabled = e.target.checked; }); });
         
-        CategoriasSuperficie.forEach(cat => {
-            cat.intervenida.addEventListener('input', actualizarSuperficientes);
-            cat.perdida.addEventListener('input', actualizarSuperficientes);
+        // --- Inicialización: rebuildOTBNTable PRIMERO, crea inputCatRojo/Amarillo/Verde/inputSinCategorizar ---
+        populateSpeciesDropdown(); 
+        populateLocationDropdown();
+        rebuildOTBNTable([]);
+
+        // Listeners de superficies (dependen de elementos creados por rebuildOTBNTable)
+        getCategoriasSuperficie().forEach(cat => {
+            if (cat.intervenida) cat.intervenida.addEventListener('input', actualizarSuperficientes);
+            if (cat.perdida)     cat.perdida.addEventListener('input', actualizarSuperficientes);
         });
-        document.getElementById('inputSinCategorizar').addEventListener('input', actualizarSuperficientes);
-        document.getElementById('inputPlanSinCategorizar').addEventListener('input', validatePlanSurfaces);
+        const _scInp = document.getElementById('inputSinCategorizar');
+        if (_scInp) _scInp.addEventListener('input', actualizarSuperficientes);
 
         document.querySelectorAll('.auto-resize-textarea').forEach(textarea => { setupPlaceholderTextarea(textarea); autoResizeTextarea(textarea); });
         ['inputDMC', 'inputPorcentajeRemanente'].forEach(id => { document.getElementById(id).addEventListener('input', calculateAndRenderPossibility); });
         document.getElementById('inputErrorEstablecidoAB').addEventListener('input', () => { if (enteredTrees.length > 0) { const treesWithCalculations = enteredTrees.map(t => ({...t, areaBasal: Math.PI * (t.dap / 200) ** 2})); calculateAndRenderSamplingStats(treesWithCalculations); } });
         
-        // --- Inicialización ---
-        populateSpeciesDropdown(); 
-        populateLocationDropdown(); 
-        actualizarSuperficientes(); 
+        actualizarSuperficientes();
         updateSampledArea();
 
         // --- Listener selector de ecorregión ---
@@ -3755,6 +3990,232 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
             reader.readAsArrayBuffer(file);
         });
 
+        // =============================================
+        // SECCIÓN 11 — INVENTARIO ARBUSTIVAS
+        // =============================================
+        let enteredTreesArb = [];
+
+        function populateSpeciesDropdownArb() {
+            const region = document.getElementById('selEcoregion') ? document.getElementById('selEcoregion').value : '';
+            const select = document.getElementById('selEspecieArb');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Seleccione especie --</option>';
+            let source = {};
+            if (region && window.speciesFormulasByRegion && window.speciesFormulasByRegion[region]) {
+                source = window.speciesFormulasByRegion[region];
+            }
+            Object.keys(source).sort().forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name + (source[name].scientificName ? ' (' + source[name].scientificName + ')' : '');
+                select.appendChild(opt);
+            });
+        }
+
+        function updateSampledAreaArb() {
+            const uniqueParcels = new Set(enteredTreesArb.map(t => t.parcelaNum));
+            const totalArea = uniqueParcels.size * 1000;
+            const el = document.getElementById('supParcelasM2Arb');
+            if (el) el.value = totalArea;
+        }
+
+        function renderEnteredTreesArb() {
+            const tbody = document.getElementById('enteredTreesTableArb').querySelector('tbody');
+            tbody.innerHTML = '';
+            enteredTreesArb.forEach((tree, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `<td>${index+1}</td><td>${tree.especie}</td><td>${tree.dap.toFixed(1)}</td><td>${tree.altTotal.toFixed(1)}</td><td>${tree.altFuste.toFixed(1)}</td><td>${tree.parcelaNum}</td><td class="action_column"><button onclick="removeTreeArb(${tree.id})">Eliminar</button></td>`;
+            });
+        }
+        window.removeTreeArb = function(id) { enteredTreesArb = enteredTreesArb.filter(t => t.id !== id); renderEnteredTreesArb(); updateSampledAreaArb(); };
+
+        function addTreeToListArb() {
+            const especie = document.getElementById('selEspecieArb').value;
+            const dap = parseFloat(document.getElementById('inputDAPArb').value);
+            const altTotal = parseFloat(document.getElementById('inputAltTotalArb').value);
+            const altFuste = parseFloat(document.getElementById('inputAltFusteArb').value);
+            const parcelaNum = parseInt(document.getElementById('inputParcelaNumArb').value);
+            if (!especie || isNaN(dap) || isNaN(altTotal) || isNaN(altFuste) || isNaN(parcelaNum)) { alert('Complete todos los campos para agregar una arbustiva.'); return; }
+            if (dap <= 0 || altTotal <= 0 || altFuste < 0 || parcelaNum <= 0) { alert('Los valores deben ser positivos.'); return; }
+            if (altFuste > altTotal) { alert('Alt. Fuste no puede ser mayor que Alt. Total.'); return; }
+            enteredTreesArb.push({ id: Date.now(), especie, dap, altTotal, altFuste, parcelaNum });
+            renderEnteredTreesArb();
+            document.getElementById('inputDAPArb').value = '';
+            document.getElementById('inputAltTotalArb').value = '';
+            document.getElementById('inputAltFusteArb').value = '';
+            document.getElementById('inputParcelaNumArb').value = '';
+            document.getElementById('selEspecieArb').focus();
+            updateSampledAreaArb();
+        }
+
+        function calculateArbustivas() {
+            if (enteredTreesArb.length === 0) { alert('No se han ingresado arbustivas. Por favor, agregue datos.'); return; }
+            const totalSampledAreaM2 = parseFloat(document.getElementById('supParcelasM2Arb').value);
+            if (totalSampledAreaM2 === 0) { alert('El área de muestreo es 0. Asegúrese de que los registros tengan números de parcela.'); return; }
+            const region = document.getElementById('selEcoregion') ? document.getElementById('selEcoregion').value : '';
+            if (!region || !window.speciesFormulasByRegion || !window.speciesFormulasByRegion[region]) { alert('⚠️ Debe seleccionar una ecorregión válida antes de calcular.'); return; }
+            const fSrc = window.speciesFormulasByRegion[region];
+            const expansionFactor = 10000 / totalSampledAreaM2;
+
+            const treesCalc = enteredTreesArb.map(tree => {
+                const formulas = fSrc[tree.especie];
+                if (!formulas) return { ...tree, volFuste: 0, volTotal: 0, areaBasal: 0 };
+                const d = tree.dap, at = tree.altTotal, af = tree.altFuste;
+                let volFuste = af > 0 ? Math.max(0, formulas.volFuste(d, af, at)) : 0;
+                let volTotal = at > 0 ? Math.max(0, formulas.volTotal ? formulas.volTotal(d, at) : formulas.volFuste(d, af, at)) : 0;
+                if (volFuste > volTotal) volFuste = volTotal;
+                const areaBasal = Math.PI * (d / 200) ** 2;
+                return { ...tree, volFuste, volTotal, areaBasal };
+            });
+
+            let resultsBySpeciesDAP = {};
+            treesCalc.forEach(tree => {
+                const dapClass = dapClasses.find(c => tree.dap >= c.min && tree.dap < c.max);
+                if (!dapClass) return;
+                if (!resultsBySpeciesDAP[tree.especie]) resultsBySpeciesDAP[tree.especie] = {};
+                if (!resultsBySpeciesDAP[tree.especie][dapClass.name]) resultsBySpeciesDAP[tree.especie][dapClass.name] = { count: 0, volFuste: 0, volTotal: 0, areaBasal: 0 };
+                resultsBySpeciesDAP[tree.especie][dapClass.name].count++;
+                resultsBySpeciesDAP[tree.especie][dapClass.name].volFuste += tree.volFuste;
+                resultsBySpeciesDAP[tree.especie][dapClass.name].volTotal += tree.volTotal;
+                resultsBySpeciesDAP[tree.especie][dapClass.name].areaBasal += tree.areaBasal;
+            });
+
+            // Render tablas arbustivas (volumen, área basal, densidad)
+            renderArbTable(document.getElementById('tableVolumenArb'), resultsBySpeciesDAP, expansionFactor, 'volFuste', 2);
+            renderArbTable(document.getElementById('tableAreaBasalArb'), resultsBySpeciesDAP, expansionFactor, 'areaBasal', 2);
+            renderArbTable(document.getElementById('tableDensidadArb'), resultsBySpeciesDAP, expansionFactor, 'count', 0);
+
+            // Estadísticos generales
+            const tbody = document.getElementById('tableEstadisticosArb').querySelector('tbody');
+            tbody.innerHTML = '';
+            let totalN = 0, totalAB = 0, totalVolFuste = 0, totalVolTotal = 0;
+            for (const esp in resultsBySpeciesDAP) {
+                dapClasses.forEach(dc => {
+                    const d = resultsBySpeciesDAP[esp][dc.name];
+                    if (d) { totalN += d.count * expansionFactor; totalAB += d.areaBasal * expansionFactor; totalVolFuste += d.volFuste * expansionFactor; totalVolTotal += d.volTotal * expansionFactor; }
+                });
+            }
+            const row = tbody.insertRow();
+            row.innerHTML = `<td>PROMEDIO</td><td>${totalN.toFixed(2)}</td><td>${totalAB.toFixed(2)}</td><td>${totalVolFuste.toFixed(2)}</td><td>${totalVolTotal.toFixed(2)}</td>`;
+            row.style.fontWeight = 'bold'; row.style.backgroundColor = '#e9ecef';
+
+            document.getElementById('arbResultsWrapper').style.display = 'block';
+        }
+
+        function renderArbTable(table, data, factor, field, decimals) {
+            createDapClassHeader(table, 'CLASES DIAMETRICAS', [{ title: 'TOTAL', rowSpan: 3 }]);
+            const tbody = table.createTBody();
+            const tfoot = table.createTFoot().insertRow();
+            tfoot.insertCell().textContent = 'TOTAL';
+            const totals = { ...Object.fromEntries(dapClasses.map(c => [c.name, 0])), 'TOTAL': 0 };
+            for (const esp in data) {
+                const row = tbody.insertRow();
+                row.insertCell().textContent = esp;
+                let total = 0;
+                dapClasses.forEach(dc => {
+                    const val = data[esp][dc.name] ? data[esp][dc.name][field] * factor : 0;
+                    row.insertCell().textContent = val.toFixed(decimals);
+                    total += val; totals[dc.name] += val;
+                });
+                row.insertCell().textContent = total.toFixed(decimals);
+                totals['TOTAL'] += total;
+            }
+            dapClasses.forEach(c => tfoot.insertCell().textContent = totals[c.name].toFixed(decimals));
+            tfoot.insertCell().textContent = totals['TOTAL'].toFixed(decimals);
+        }
+
+        // Listeners arbustivas
+        const btnAddArb = document.getElementById('btnAddTreeArb');
+        if (btnAddArb) btnAddArb.addEventListener('click', addTreeToListArb);
+        const btnCalcArb = document.getElementById('btnCalcularArbustivas');
+        if (btnCalcArb) btnCalcArb.addEventListener('click', calculateArbustivas);
+        const btnLimpArb = document.getElementById('btnLimpiarArbustivas');
+        if (btnLimpArb) btnLimpArb.addEventListener('click', () => {
+            if (confirm('¿Borrar todos los datos de arbustivas?')) {
+                enteredTreesArb = [];
+                renderEnteredTreesArb();
+                updateSampledAreaArb();
+                document.getElementById('arbResultsWrapper').style.display = 'none';
+            }
+        });
+
+        // Excel arbustivas
+        document.getElementById('inputCargarExcelArb').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (typeof XLSX === 'undefined') { mostrarEstadoCargaArb('Error: SheetJS no disponible.', 'error'); return; }
+            mostrarEstadoCargaArb('Procesando archivo...', 'info');
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    let sheetName = workbook.SheetNames.includes('INVENTARIO') ? 'INVENTARIO' : workbook.SheetNames[0];
+                    const ws = workbook.Sheets[sheetName];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+                    if (rows.length < 2) { mostrarEstadoCargaArb('Archivo sin datos suficientes.', 'error'); return; }
+                    let headerRow = -1, colEspecie = -1, colDAP = -1, colAltTotal = -1, colAltFuste = -1, colParcela = -1;
+                    for (let r = 0; r < Math.min(rows.length, 10); r++) {
+                        const row = rows[r].map(c => String(c).trim().toUpperCase());
+                        const espIdx = row.findIndex(c => c.includes('ESPECIE'));
+                        if (espIdx >= 0) { headerRow = r; colEspecie = espIdx; colDAP = row.findIndex(c => c.includes('DAP')); colAltTotal = row.findIndex(c => c.includes('ALT') && c.includes('TOTAL')); colAltFuste = row.findIndex(c => c.includes('ALT') && c.includes('FUSTE')); colParcela = row.findIndex(c => c.includes('PARCELA')); break; }
+                    }
+                    if (headerRow < 0 || colEspecie < 0 || colDAP < 0 || colAltTotal < 0 || colAltFuste < 0 || colParcela < 0) { mostrarEstadoCargaArb('Columnas requeridas no encontradas.', 'error'); return; }
+                    const region = document.getElementById('selEcoregion') ? document.getElementById('selEcoregion').value : '';
+                    const validSpecies = new Set(Object.keys(window.speciesFormulasByRegion[region] || {}));
+                    const newTrees = []; const errors = [];
+                    for (let r = headerRow + 1; r < rows.length; r++) {
+                        const row = rows[r];
+                        const especie = String(row[colEspecie] || '').trim();
+                        if (!especie) continue;
+                        const dap = parseFloat(String(row[colDAP]).replace(',', '.'));
+                        const altTotal = parseFloat(String(row[colAltTotal]).replace(',', '.'));
+                        const altFuste = parseFloat(String(row[colAltFuste]).replace(',', '.'));
+                        const parcelaNum = parseInt(String(row[colParcela]));
+                        if (!validSpecies.has(especie)) { errors.push(`Fila ${r+1}: especie "${especie}" no reconocida.`); continue; }
+                        if (isNaN(dap) || dap <= 0 || isNaN(altTotal) || altTotal <= 0 || isNaN(altFuste) || altFuste < 0 || isNaN(parcelaNum) || parcelaNum <= 0 || altFuste > altTotal) { errors.push(`Fila ${r+1}: datos inválidos.`); continue; }
+                        newTrees.push({ id: Date.now() + r, especie, dap, altTotal, altFuste, parcelaNum });
+                    }
+                    if (newTrees.length === 0) { mostrarEstadoCargaArb(`No se importó ningún registro válido. ${errors.slice(0,3).join(' | ')}`, 'error'); return; }
+                    enteredTreesArb.push(...newTrees);
+                    renderEnteredTreesArb();
+                    updateSampledAreaArb();
+                    document.getElementById('btnLimpiarCargaExcelArb').style.display = 'inline-block';
+                    let msg = `✅ Se importaron ${newTrees.length} registro(s). Total: ${enteredTreesArb.length}.`;
+                    if (errors.length > 0) msg += ` ⚠️ ${errors.length} fila(s) omitidas.`;
+                    mostrarEstadoCargaArb(msg, 'success');
+                } catch(err) { mostrarEstadoCargaArb('Error al leer archivo: ' + err.message, 'error'); }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function mostrarEstadoCargaArb(mensaje, tipo) {
+            const el = document.getElementById('excelUploadStatusArb');
+            el.style.display = 'block';
+            el.style.backgroundColor = tipo === 'success' ? '#d4edda' : tipo === 'error' ? '#f8d7da' : '#fff3cd';
+            el.style.color = tipo === 'success' ? '#155724' : tipo === 'error' ? '#721c24' : '#856404';
+            el.style.border = `1px solid ${tipo === 'success' ? '#c3e6cb' : tipo === 'error' ? '#f5c6cb' : '#ffeeba'}`;
+            el.textContent = mensaje;
+        }
+
+        // Visibilidad de sección 11 vinculada al checkbox control_arbustivas
+        function toggleSeccionArbustivas() {
+            const activa = document.getElementById('chk_control_arbustivas') && document.getElementById('chk_control_arbustivas').checked;
+            const sec = document.getElementById('seccionArbustivas');
+            if (sec) sec.style.display = activa ? '' : 'none';
+            if (activa) populateSpeciesDropdownArb();
+        }
+        const chkArb = document.getElementById('chk_control_arbustivas');
+        if (chkArb) chkArb.addEventListener('change', toggleSeccionArbustivas);
+
+        // Actualizar dropdown arbustivas cuando cambia ecorregión
+        if (selEcoregion) selEcoregion.addEventListener('change', () => {
+            if (document.getElementById('chk_control_arbustivas') && document.getElementById('chk_control_arbustivas').checked) populateSpeciesDropdownArb();
+        });
+        // =============================================
+        // FIN SECCIÓN 11 — INVENTARIO ARBUSTIVAS
+        // =============================================
+
         }); // fin DOMContentLoaded
 
         // ===== INICIALIZACIÓN (ya se llama populateSpeciesDropdown dentro de DOMContentLoaded) =====
@@ -3845,9 +4306,9 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
                     return;
                 }
 
-                // Determinar fuente de especies según ecorregión
                 var selEco = document.getElementById('selEcoregion');
                 var region = selEco ? selEco.value : '';
+                if (!region) { alert('⚠️ Debe seleccionar una ecorregión antes de descargar la planilla para que incluya las especies y fórmulas correctas.'); return; }
                 var fuenteEspecies = (region && window.speciesFormulasByRegion && window.speciesFormulasByRegion[region])
                     ? window.speciesFormulasByRegion[region]
                     : {};
@@ -3937,6 +4398,70 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
             document.getElementById('btnLimpiarCargaExcel').style.display = 'none';
         }
 
+        function limpiarCargaExcelArb() {
+            document.getElementById('inputCargarExcelArb').value = '';
+            document.getElementById('excelUploadStatusArb').style.display = 'none';
+            document.getElementById('btnLimpiarCargaExcelArb').style.display = 'none';
+        }
+
+        function descargarPlanillaExcelArb() {
+            try {
+                if (typeof XLSX === 'undefined') { alert('Error: la librería SheetJS no está disponible.'); return; }
+                var selEco = document.getElementById('selEcoregion');
+                var region = selEco ? selEco.value : '';
+                var fuenteEspecies = (region && window.speciesFormulasByRegion && window.speciesFormulasByRegion[region]) ? window.speciesFormulasByRegion[region] : {};
+                var etiquetaRegion = { ESP: 'Espinal (ESP)', PCH: 'Parque Chaqueño (PCH)', SPA: 'Selva Paranaense (SPA)' }[region] || 'Sin ecorregión';
+                var nombreArchivo = region ? ('Planilla_Inventario_Arbustivas_' + etiquetaRegion.split(' ')[0] + '.xlsx') : 'Planilla_Inventario_Arbustivas.xlsx';
+                var wb = XLSX.utils.book_new();
+
+                var instrData = [
+                    ['PLANILLA DE INVENTARIO DE ARBUSTIVAS'],
+                    ['Ecorregión: ' + etiquetaRegion],
+                    ['', 'Fuente de ecuaciones: Segundo Inventario Nacional de Bosques Nativos (PINBN)'],
+                    ['1.', 'Vaya a la hoja INVENTARIO para ingresar los datos de las arbustivas medidas.'],
+                    ['2.', 'Cada fila representa un individuo arbustivo del inventario.'],
+                    ['3.', 'El campo ESPECIE debe coincidir EXACTAMENTE con los nombres de la hoja ESPECIES_VALIDAS.'],
+                    ['4.', 'El campo PARCELA N° es obligatorio.'],
+                    ['5.', 'Los valores de DAP, Alt. Total y Alt. Fuste deben ser números positivos.'],
+                    ['6.', 'Una vez completada, GUARDE y cargue desde el botón Cargar Planilla Excel (Arbustivas).'],
+                    ['7.', '⚠ La ecorregión de la planilla debe coincidir con la seleccionada en la web.'],
+                ];
+                var wsInst = XLSX.utils.aoa_to_sheet(instrData);
+                wsInst['!cols'] = [{ wch: 5 }, { wch: 90 }];
+                XLSX.utils.book_append_sheet(wb, wsInst, 'INSTRUCCIONES');
+
+                var invHeaders = ['N°', 'ESPECIE', 'NOMBRE VULGAR (referencia)', 'DAP (cm)', 'ALT. TOTAL (m)', 'ALT. FUSTE (m)', 'PARCELA N° (Obligatorio)'];
+                var invData = [invHeaders];
+                for (var i = 1; i <= 200; i++) invData.push([i, '', '', '', '', '', '']);
+                var wsInv = XLSX.utils.aoa_to_sheet(invData);
+                wsInv['!cols'] = [{ wch: 6 }, { wch: 42 }, { wch: 30 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 18 }];
+                XLSX.utils.book_append_sheet(wb, wsInv, 'INVENTARIO');
+
+                var spData = [['NOMBRE CIENTÍFICO (usar en planilla)', 'NOMBRE VULGAR (referencia)', 'Ecorregión']];
+                Object.keys(fuenteEspecies).sort().forEach(function(key) {
+                    spData.push([key, fuenteEspecies[key].scientificName || '', etiquetaRegion]);
+                });
+                var wsSp = XLSX.utils.aoa_to_sheet(spData);
+                wsSp['!cols'] = [{ wch: 48 }, { wch: 40 }, { wch: 28 }];
+                XLSX.utils.book_append_sheet(wb, wsSp, 'ESPECIES_VALIDAS');
+
+                var textoRegionFV = region && window.ecuacionesTexto && window.ecuacionesTexto[region] ? window.ecuacionesTexto[region] : null;
+                var fvData = [['ESPECIE (Nombre Científico)', 'NOMBRE VULGAR', 'ECUACIÓN VOLUMEN DE FUSTE', 'Ecorregión']];
+                Object.keys(fuenteEspecies).sort().forEach(function(key) {
+                    var sp = fuenteEspecies[key];
+                    var ecuacionTexto = (textoRegionFV && textoRegionFV[key]) ? textoRegionFV[key].ecuacion : (sp.volFuste ? _describirFusteXLS(sp.volFuste) : '-');
+                    fvData.push([key, sp.scientificName || '', ecuacionTexto, etiquetaRegion]);
+                });
+                var wsFv = XLSX.utils.aoa_to_sheet(fvData);
+                wsFv['!cols'] = [{ wch: 45 }, { wch: 32 }, { wch: 65 }, { wch: 28 }];
+                XLSX.utils.book_append_sheet(wb, wsFv, 'FORMULAS_VOLUMEN');
+
+                XLSX.writeFile(wb, nombreArchivo);
+            } catch(err) {
+                alert('Error al generar la planilla: ' + err.message);
+                console.error(err);
+            }
+        }
 
     </script>
 </body>

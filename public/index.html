@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1101,9 +1102,11 @@
                         <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
                             <input type="checkbox" class="chkActividad" value="control_arbustivas" id="chk_control_arbustivas"> &nbsp;Control de Arbustivas
                         </label>
-                        <label class="inline-checkbox-label" style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; cursor:pointer; font-size:0.95em;">
-                            <input type="checkbox" class="chkActividad" value="apertura_caminos" id="chk_apertura_caminos"> &nbsp;Apertura de Caminos - Cortafuegos
-                        </label>
+                        <div style="border:1px solid #b8daff; padding:9px 14px; border-radius:5px; background:#e8f4fd; font-size:0.95em;">
+                            <label class="inline-checkbox-label" style="cursor:pointer; margin-bottom:0;">
+                                <input type="checkbox" class="chkActividad" value="apertura_caminos" id="chk_apertura_caminos"> &nbsp;Apertura de Caminos - Cortafuegos
+                            </label>
+                        </div>
                     </div>
                     <p id="actividadesWarning" style="color:#dc3545; font-size:0.88em; margin-top:8px; display:none;">⚠ Debe seleccionar al menos una actividad para habilitar los polígonos KML y la tabla OTBN.</p>
                 </fieldset>
@@ -1390,6 +1393,8 @@
                     </p>
                 </fieldset>
     
+            <!-- SECCIÓN 10: visible según actividades seleccionadas -->
+            <div id="seccionForestal" style="display:none;">
                 <h2 class="main-section-title">10. DATOS DE INVENTARIO FORESTAL</h2>
                 <fieldset class="input-fieldset">
                     <legend>Datos de Parcela, Árboles y Resultados</legend>
@@ -1642,6 +1647,7 @@
                 </div>
     
             </div>
+            </div> <!-- fin seccionForestal -->
 
             <!-- SECCIÓN 11: DATOS DE INVENTARIO ARBUSTIVAS — visible solo si chk_control_arbustivas está activo -->
             <div class="input-section" id="seccionArbustivas" style="display:none;">
@@ -1653,6 +1659,23 @@
                     <div class="static-text-section">
                         <p>El inventario de arbustivas utiliza las mismas unidades de muestreo que el inventario forestal. Se relevan individuos leñosos de porte arbustivo aplicando los mismos criterios de inclusión por distancia al centro de parcela. Se utilizan las mismas ecuaciones de cubicación que el inventario forestal para la ecorregión seleccionada.</p>
                     </div>
+
+                    <fieldset class="input-fieldset" style="margin-bottom:15px;">
+                        <legend>Ecorregión del Inventario de Arbustivas</legend>
+                        <div class="form-grid" style="align-items:center;">
+                            <label for="selEcoregionArb">🌿 Ecorregión:</label>
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                <select id="selEcoregionArb" style="min-width:240px; padding:8px 10px; border:1px solid #ced4da; border-radius:4px; font-size:0.95em;">
+                                    <option value="">-- Seleccione ecorregión --</option>
+                                    <option value="ESP">Espinal (ESP)</option>
+                                    <option value="PCH">Parque Chaqueño (PCH)</option>
+                                    <option value="SPA">Selva Paranaense (SPA)</option>
+                                </select>
+                                <span id="ecoregionBadgeArb" style="display:none; background:#28a745; color:white; padding:4px 10px; border-radius:12px; font-size:0.85em; font-weight:600;"></span>
+                                <span id="ecoregionWarningArb" style="display:none; color:#dc3545; font-size:0.85em; font-weight:600;">⚠ Seleccione una ecorregión</span>
+                            </div>
+                        </div>
+                    </fieldset>
 
                     <h3 class="sub-section-title">11.2. Registro de Datos de Campo</h3>
                     <fieldset class="input-fieldset">
@@ -2432,6 +2455,19 @@ METAS CUANTIFICABLES (Ejemplos, adaptar):
 
                 // Recalcular área total
                 calcularSuperficieActividades();
+
+                // Visibilidad sección 10
+                toggleSeccionForestal();
+            }
+
+            function toggleSeccionForestal() {
+                const selected = getActividadesSeleccionadas();
+                const mostrar = selected.includes('manejo')
+                    || selected.includes('conservacion')
+                    || selected.includes('cambio_uso')
+                    || selected.includes('apertura_caminos');
+                const sec = document.getElementById('seccionForestal');
+                if (sec) sec.style.display = mostrar ? '' : 'none';
             }
 
             // Listeners para checkboxes de actividades
@@ -3996,7 +4032,7 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
         let enteredTreesArb = [];
 
         function populateSpeciesDropdownArb() {
-            const region = document.getElementById('selEcoregion') ? document.getElementById('selEcoregion').value : '';
+            const region = document.getElementById('selEcoregionArb') ? document.getElementById('selEcoregionArb').value : '';
             const select = document.getElementById('selEspecieArb');
             if (!select) return;
             select.innerHTML = '<option value="">-- Seleccione especie --</option>';
@@ -4052,8 +4088,8 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
             if (enteredTreesArb.length === 0) { alert('No se han ingresado arbustivas. Por favor, agregue datos.'); return; }
             const totalSampledAreaM2 = parseFloat(document.getElementById('supParcelasM2Arb').value);
             if (totalSampledAreaM2 === 0) { alert('El área de muestreo es 0. Asegúrese de que los registros tengan números de parcela.'); return; }
-            const region = document.getElementById('selEcoregion') ? document.getElementById('selEcoregion').value : '';
-            if (!region || !window.speciesFormulasByRegion || !window.speciesFormulasByRegion[region]) { alert('⚠️ Debe seleccionar una ecorregión válida antes de calcular.'); return; }
+            const region = document.getElementById('selEcoregionArb') ? document.getElementById('selEcoregionArb').value : '';
+            if (!region || !window.speciesFormulasByRegion || !window.speciesFormulasByRegion[region]) { alert('⚠️ Debe seleccionar una ecorregión en la Sección 11 antes de calcular.'); return; }
             const fSrc = window.speciesFormulasByRegion[region];
             const expansionFactor = 10000 / totalSampledAreaM2;
 
@@ -4161,7 +4197,8 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
                         if (espIdx >= 0) { headerRow = r; colEspecie = espIdx; colDAP = row.findIndex(c => c.includes('DAP')); colAltTotal = row.findIndex(c => c.includes('ALT') && c.includes('TOTAL')); colAltFuste = row.findIndex(c => c.includes('ALT') && c.includes('FUSTE')); colParcela = row.findIndex(c => c.includes('PARCELA')); break; }
                     }
                     if (headerRow < 0 || colEspecie < 0 || colDAP < 0 || colAltTotal < 0 || colAltFuste < 0 || colParcela < 0) { mostrarEstadoCargaArb('Columnas requeridas no encontradas.', 'error'); return; }
-                    const region = document.getElementById('selEcoregion') ? document.getElementById('selEcoregion').value : '';
+                    const region = document.getElementById('selEcoregionArb') ? document.getElementById('selEcoregionArb').value : '';
+                    if (!region) { mostrarEstadoCargaArb('⚠️ Seleccione una ecorregión en la Sección 11 antes de cargar el archivo.', 'error'); return; }
                     const validSpecies = new Set(Object.keys(window.speciesFormulasByRegion[region] || {}));
                     const newTrees = []; const errors = [];
                     for (let r = headerRow + 1; r < rows.length; r++) {
@@ -4208,10 +4245,25 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
         const chkArb = document.getElementById('chk_control_arbustivas');
         if (chkArb) chkArb.addEventListener('change', toggleSeccionArbustivas);
 
-        // Actualizar dropdown arbustivas cuando cambia ecorregión
-        if (selEcoregion) selEcoregion.addEventListener('change', () => {
-            if (document.getElementById('chk_control_arbustivas') && document.getElementById('chk_control_arbustivas').checked) populateSpeciesDropdownArb();
-        });
+        // Listener del selector de ecorregión propio de arbustivas
+        const selEcoregionArb = document.getElementById('selEcoregionArb');
+        if (selEcoregionArb) {
+            selEcoregionArb.addEventListener('change', function() {
+                const region = this.value;
+                const badge = document.getElementById('ecoregionBadgeArb');
+                const warning = document.getElementById('ecoregionWarningArb');
+                const labels = { ESP: 'Espinal', PCH: 'Parque Chaqueño', SPA: 'Selva Paranaense' };
+                if (region && labels[region]) {
+                    badge.textContent = '✓ ' + labels[region];
+                    badge.style.display = 'inline-block';
+                    warning.style.display = 'none';
+                } else {
+                    badge.style.display = 'none';
+                    warning.style.display = 'inline';
+                }
+                populateSpeciesDropdownArb();
+            });
+        }
         // =============================================
         // FIN SECCIÓN 11 — INVENTARIO ARBUSTIVAS
         // =============================================
@@ -4407,8 +4459,9 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
         function descargarPlanillaExcelArb() {
             try {
                 if (typeof XLSX === 'undefined') { alert('Error: la librería SheetJS no está disponible.'); return; }
-                var selEco = document.getElementById('selEcoregion');
+                var selEco = document.getElementById('selEcoregionArb');
                 var region = selEco ? selEco.value : '';
+                if (!region) { alert('⚠️ Debe seleccionar una ecorregión en la Sección 11 antes de descargar la planilla para que incluya las especies y fórmulas correctas.'); return; }
                 var fuenteEspecies = (region && window.speciesFormulasByRegion && window.speciesFormulasByRegion[region]) ? window.speciesFormulasByRegion[region] : {};
                 var etiquetaRegion = { ESP: 'Espinal (ESP)', PCH: 'Parque Chaqueño (PCH)', SPA: 'Selva Paranaense (SPA)' }[region] || 'Sin ecorregión';
                 var nombreArchivo = region ? ('Planilla_Inventario_Arbustivas_' + etiquetaRegion.split(' ')[0] + '.xlsx') : 'Planilla_Inventario_Arbustivas.xlsx';
@@ -4462,6 +4515,7 @@ const speciesFormulas = window._speciesFormulasGlobal = {}; // Fórmulas origina
                 console.error(err);
             }
         }
+
 
     </script>
 </body>
